@@ -586,10 +586,4 @@ export const defaultStorage = createStorageManager({
   allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
 })
 
-// Export storage providers for direct use
-export {
-  LocalStorageProvider,
-  VercelBlobProvider,
-  S3StorageProvider,
-  CloudinaryProvider,
-}
+// Storage providers are already exported above
