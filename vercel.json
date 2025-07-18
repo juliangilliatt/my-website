@@ -2,8 +2,6 @@
   "version": 2,
   "name": "recipe-website",
   "alias": ["juliangilliatt.com", "www.juliangilliatt.com"],
-  "scope": "my-team",
-  "public": false,
   "github": {
     "enabled": true,
     "autoAlias": true,
@@ -240,22 +238,10 @@
     "minimumCacheTTL": 31536000,
     "dangerouslyAllowSVG": false
   },
-  "outputDirectory": ".next",
-  "installCommand": "npm ci",
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
   "framework": "nextjs",
-  "nodeVersion": "18.x",
   "edge": {
     "regions": ["iad1", "sfo1", "lhr1"]
   },
-  "webAnalytics": {
-    "id": "my-analytics-id"
-  },
-  "speedInsights": {
-    "id": "my-speed-insights-id"
-  },
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
   "routes": [
     {
       "src": "/health",
