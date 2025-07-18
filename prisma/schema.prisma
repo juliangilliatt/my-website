@@ -1,0 +1,297 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String
+  avatar    String?
+  role      Role     @default(USER)
+  bio       String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Social media links
+  twitter   String?
+  github    String?
+  linkedin  String?
+  instagram String?
+
+  // Relations
+  recipes   Recipe[]
+  blogPosts BlogPost[]
+
+  @@map("users")
+}
+
+model Recipe {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String   @unique
+  description String
+  prepTime    Int      // in minutes
+  cookTime    Int      // in minutes
+  totalTime   Int      // in minutes
+  servings    Int
+  difficulty  String   // 'easy', 'medium', 'hard'
+  category    String
+  cuisine     String
+  notes       String?
+  source      String?
+  rating      Float?
+  ratingCount Int?     @default(0)
+  featured    Boolean  @default(false)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // JSON fields for complex data
+  ingredients  Json[] // Array of ingredient objects
+  instructions Json[] // Array of instruction objects
+  images       Json[] // Array of image objects
+  nutrition    Json?  // Nutrition information object
+
+  // Relations
+  authorId String @db.ObjectId
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  tagIds String[] @db.ObjectId
+  tags   Tag[]    @relation(fields: [tagIds], references: [id])
+
+  @@map("recipes")
+  @@index([slug])
+  @@index([category])
+  @@index([cuisine])
+  @@index([difficulty])
+  @@index([featured])
+  @@index([published])
+  @@index([createdAt])
+  @@index([rating])
+  @@fulltext([title, description])
+}
+
+model Tag {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique
+  slug  String @unique
+  color String @default("#000000")
+  count Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  recipeIds String[] @db.ObjectId
+  recipes   Recipe[] @relation(fields: [recipeIds], references: [id])
+
+  blogPostIds String[]   @db.ObjectId
+  blogPosts   BlogPost[] @relation(fields: [blogPostIds], references: [id])
+
+  @@map("tags")
+  @@index([slug])
+  @@index([name])
+}
+
+model BlogPost {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String      @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  category    String
+  status      PostStatus  @default(DRAFT)
+  featured    Boolean     @default(false)
+  publishedAt DateTime?
+  readingTime Int         @default(0) // in minutes
+  views       Int         @default(0)
+  likes       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  authorId String @db.ObjectId
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  tagIds String[] @db.ObjectId
+  tags   Tag[]    @relation(fields: [tagIds], references: [id])
+
+  @@map("blog_posts")
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([createdAt])
+  @@index([views])
+  @@index([likes])
+  @@fulltext([title, excerpt, content])
+}
+
+model Image {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  url         String
+  filename    String
+  originalName String
+  size        Int      // in bytes
+  type        String   // mime type
+  alt         String?
+  caption     String?
+  width       Int?
+  height      Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  uploadedById String @db.ObjectId
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@map("images")
+  @@index([filename])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Analytics {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  event     String
+  path      String
+  userAgent String?
+  ip        String?
+  country   String?
+  city      String?
+  device    String?
+  browser   String?
+  os        String?
+  referrer  String?
+  duration  Int?     // in seconds
+  createdAt DateTime @default(now())
+
+  // Additional event data
+  properties Json?
+
+  @@map("analytics")
+  @@index([event])
+  @@index([path])
+  @@index([createdAt])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String?  @db.ObjectId
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@index([sessionToken])
+  @@index([userId])
+  @@index([expires])
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+  @@index([userId])
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+  @@index([token])
+  @@index([expires])
+}
+
+model Newsletter {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email       String   @unique
+  name        String?
+  subscribed  Boolean  @default(true)
+  confirmed   Boolean  @default(false)
+  source      String?  // where they signed up from
+  tags        String[] // segmentation tags
+  preferences Json?    // email preferences
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("newsletter")
+  @@index([email])
+  @@index([subscribed])
+  @@index([confirmed])
+  @@index([createdAt])
+}
+
+model Contact {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    ContactStatus @default(UNREAD)
+  replied   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("contacts")
+  @@index([email])
+  @@index([status])
+  @@index([replied])
+  @@index([createdAt])
+}
+
+// Enums
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ContactStatus {
+  UNREAD
+  READ
+  REPLIED
+  SPAM
+}

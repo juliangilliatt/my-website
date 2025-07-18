@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Design system CSS variables */
+  --color-primary: 239 68 68; /* red-500 */
+  --color-primary-foreground: 255 255 255;
+  --color-secondary: 249 115 22; /* orange-500 */
+  --color-secondary-foreground: 255 255 255;
+  --color-accent: 249 115 22; /* orange-500 */
+  --color-accent-foreground: 255 255 255;
+  --color-background: 255 255 255;
+  --color-foreground: 23 23 23; /* neutral-900 */
+  --color-card: 255 255 255;
+  --color-card-foreground: 23 23 23;
+  --color-popover: 255 255 255;
+  --color-popover-foreground: 23 23 23;
+  --color-muted: 245 245 245; /* neutral-100 */
+  --color-muted-foreground: 115 115 115; /* neutral-500 */
+  --color-border: 229 229 229; /* neutral-200 */
+  --color-input: 229 229 229;
+  --color-ring: 239 68 68;
+  
+  /* Spacing scale based on 8px grid */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-10: 2.5rem;  /* 40px */
+  --spacing-12: 3rem;    /* 48px */
+  --spacing-16: 4rem;    /* 64px */
+  --spacing-20: 5rem;    /* 80px */
+  --spacing-24: 6rem;    /* 96px */
+  
+  /* Typography scale */
+  --font-family-mono: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-code: 'Fira Code', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+  
+  /* Shadows for brutalist design */
+  --shadow-brutal: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  
+  /* Animation durations */
+  --animation-fast: 0.15s;
+  --animation-normal: 0.3s;
+  --animation-slow: 0.5s;
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-family: var(--font-family-sans);
+  line-height: 1.6;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-muted-foreground));
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid rgb(var(--color-ring));
+  outline-offset: 2px;
+}
+
+/* Button base styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 2px solid rgb(var(--color-foreground));
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  transition: all var(--animation-fast) ease;
+  cursor: pointer;
+  box-shadow: var(--shadow-brutal);
+  font-family: var(--font-family-mono);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.btn:hover {
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-brutal-sm);
+}
+
+.btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+/* Card base styles */
+.card {
+  background: rgb(var(--color-card));
+  border: 2px solid rgb(var(--color-foreground));
+  box-shadow: var(--shadow-brutal);
+  transition: all var(--animation-normal) ease;
+}
+
+.card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-brutal-lg);
+}
+
+/* Input base styles */
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid rgb(var(--color-border));
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-family: var(--font-family-mono);
+  font-size: 0.875rem;
+  transition: all var(--animation-fast) ease;
+}
+
+.input:focus {
+  border-color: rgb(var(--color-ring));
+  outline: none;
+  box-shadow: var(--shadow-brutal-sm);
+}
+
+/* Typography utilities */
+.text-mono {
+  font-family: var(--font-family-mono);
+}
+
+.text-code {
+  font-family: var(--font-family-code);
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fade-in var(--animation-normal) ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slide-in var(--animation-normal) ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Print styles */
+@media print {
+  * {
+    box-shadow: none !important;
+    color: black !important;
+    background: white !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}

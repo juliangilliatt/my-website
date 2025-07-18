@@ -1,0 +1,346 @@
+Process Task List
+
+Guidelines for managing task lists in markdown files to track progress on completing a PRD
+
+## Task Implementation
+- **One sub-task at a time:** Do **NOT** start the next sub‑task until you ask the user for permission and they say "yes" or "y"
+- **Completion protocol:**  
+  1. When you finish a **sub‑task**, immediately mark it as completed by changing `[ ]` to `[x]`.
+  2. If **all** subtasks underneath a parent task are now `[x]`, follow this sequence:
+    - **First**: Run the full test suite (`pytest`, `npm test`, `bin/rails test`, etc.)
+    - **Only if all tests pass**: Stage changes (`git add .`)
+    - **Clean up**: Remove any temporary files and temporary code before committing
+    - **Commit**: Use a descriptive commit message that:
+      - Uses conventional commit format (`feat:`, `fix:`, `refactor:`, etc.)
+      - Summarizes what was accomplished in the parent task
+      - Lists key changes and additions
+      - References the task number and PRD context
+      - **Formats the message as a single-line command using `-m` flags**, e.g.:
+
+        ```
+        git commit -m "feat: add payment validation logic" -m "- Validates card type and expiry" -m "- Adds unit tests for edge cases" -m "Related to T123 in PRD"
+        ```
+  3. Once all the subtasks are marked completed and changes have been committed, mark the **parent task** as completed.
+- Stop after each sub‑task and wait for the user's go‑ahead.
+
+## Task List Maintenance
+
+1. **Update the task list as you work:**
+   - Mark tasks and subtasks as completed (`[x]`) per the protocol above.
+   - Add new tasks as they emerge.
+
+2. **Maintain the "Relevant Files" section:**
+   - List every file created or modified.
+   - Give each file a one‑line description of its purpose.
+
+## AI Instructions
+
+When working with task lists, the AI must:
+
+1. Regularly update the task list file after finishing any significant work.
+2. Follow the completion protocol:
+   - Mark each finished **sub‑task** `[x]`.
+   - Mark the **parent task** `[x]` once **all** its subtasks are `[x]`.
+3. Add newly discovered tasks.
+4. Keep "Relevant Files" accurate and up to date.
+5. Before starting work, check which sub‑task is next.
+6. After implementing a sub‑task, update the file and then pause for user approval.
+
+<context>
+## Section 1: Project Foundation & Setup
+
+- [x] **Step 1: Initialize Next.js Project with Core Dependencies**
+   - **Task**: Set up Next.js 14+ project with TypeScript, Tailwind CSS, and essential dependencies for the portfolio application
+   - **Files**: [9 files]
+      - `package.json`: Next.js 14+, TypeScript, Tailwind, Prisma, Clerk, Zod dependencies
+      - `next.config.js`: Security headers, image optimization, MDX support configuration
+      - `tailwind.config.js`: Custom color palette, fonts, spacing system (8px grid)
+      - `tsconfig.json`: TypeScript configuration with strict mode and path mapping
+      - `.env.local`: Environment variables template with placeholders
+      - `.gitignore`: Standard Next.js gitignore with additional entries for Prisma and environment files
+      - `app/globals.css`: Tailwind base imports and custom CSS variables for design system
+      - `app/layout.tsx`: Root layout with font imports (IBM Plex Mono, Inter, Fira Code)
+      - `middleware.ts`: Basic middleware structure (will be expanded in Step 6)
+   - **Step Dependencies**: None
+   - **User Instructions**: Run `npm install` after file generation. Ensure environment variables are configured.
+
+- [x] **Step 2: Design System Components Foundation**
+   - **Task**: Create reusable UI components following the brutalist design system specifications
+   - **Files**: [8 files]
+      - `components/ui/Button.tsx`: Primary, secondary, and danger button variants with hover states
+      - `components/ui/Card.tsx`: Base card component with hover animations and red-orange border
+      - `components/ui/Input.tsx`: Form input with focus states and validation styling
+      - `components/ui/Badge.tsx`: Pills for tags, time indicators, and status messages
+      - `components/ui/LoadingSpinner.tsx`: Skeleton loading states and spinner components
+      - `lib/utils.ts`: Utility functions for className merging and common helpers
+      - `lib/constants.ts`: Design system constants (colors, breakpoints, spacing)
+      - `types/index.ts`: Global TypeScript type definitions for props and data structures
+   - **Step Dependencies**: Step 1
+   - **User Instructions**: Test components in isolation to verify design system compliance
+
+## Section 2: Database & Schema Setup
+
+- [x] **Step 3: Prisma Schema and Database Configuration**
+   - **Task**: Set up Prisma ORM with MongoDB connection and define complete data models for recipes, tags, and blog posts
+   - **Files**: [5 files]
+      - `prisma/schema.prisma`: Complete schema with Recipe, Tag, BlogPost models and MongoDB configuration
+      - `lib/prisma.ts`: Prisma client singleton with connection pooling
+      - `lib/db-seed.ts`: Database seeding script with sample recipes and blog posts
+      - `scripts/setup-db.js`: Database initialization script with MongoDB indexes
+      - `.env.example`: Updated environment template with database URL patterns
+   - **Step Dependencies**: Step 1
+   - **User Instructions**: Set up MongoDB Atlas cluster, configure connection string, run `npx prisma generate` and `npx prisma db push`
+
+- [x] **Step 4: Core Server Actions and Data Layer**
+   - **Task**: Implement server actions for database operations with proper error handling and validation schemas
+   - **Files**: [7 files]
+      - `lib/actions/recipes.ts`: Recipe CRUD operations, search, and filtering server actions
+      - `lib/actions/blog.ts`: Blog post management and retrieval server actions
+      - `lib/actions/tags.ts`: Tag management and association server actions
+      - `lib/validations/recipe.ts`: Zod schemas for recipe creation and validation
+      - `lib/validations/blog.ts`: Zod schemas for blog post validation
+      - `lib/utils/slug.ts`: Slug generation utilities for SEO-friendly URLs
+      - `lib/utils/search.ts`: Search query processing and MongoDB text search helpers
+   - **Step Dependencies**: Step 3
+   - **User Instructions**: Test server actions with sample data to ensure database connectivity
+
+## Section 3: Authentication & Middleware
+
+- [x] **Step 5: Clerk Authentication Setup**
+   - **Task**: Configure Clerk authentication with protected routes and user session management
+   - **Files**: [6 files]
+      - `app/sign-in/[[...sign-in]]/page.tsx`: Clerk sign-in page with custom styling
+      - `app/sign-up/[[...sign-up]]/page.tsx`: Clerk sign-up page (minimal, admin-focused)
+      - `components/auth/UserButton.tsx`: Custom user button component with brutalist styling
+      - `components/auth/AuthGuard.tsx`: Client-side authentication guard component
+      - `lib/auth.ts`: Authentication utilities and helper functions
+      - `middleware.ts`: Updated with Clerk auth middleware and protected route configuration
+   - **Step Dependencies**: Step 1
+   - **User Instructions**: Configure Clerk dashboard, set up environment variables, test authentication flow
+
+## Section 4: Core Layout & Navigation
+
+- [ ] **Step 6: Navigation System and Layout Structure**
+   - **Task**: Implement responsive navigation with mobile hamburger menu and desktop sidebar following design specifications
+   - **Files**: [8 files]
+      - `components/layout/Navigation.tsx`: Main navigation component with responsive behavior
+      - `components/layout/Sidebar.tsx`: Desktop sidebar navigation (>768px)
+      - `components/layout/MobileNav.tsx`: Mobile hamburger menu with slide-out animation
+      - `components/layout/Header.tsx`: Top header for tablet/mobile layouts
+      - `components/layout/Footer.tsx`: Site footer with minimal design
+      - `app/layout.tsx`: Updated root layout with navigation integration
+      - `hooks/useNavigation.ts`: Custom hook for navigation state management
+      - `lib/navigation.ts`: Navigation configuration and route definitions
+   - **Step Dependencies**: Step 1, Step 2
+   - **User Instructions**: Test responsive behavior across all breakpoints (mobile, tablet, desktop)
+
+## Section 5: Landing Page Implementation
+
+- [ ] **Step 7: GitHub API Integration and Landing Page**
+   - **Task**: Create landing page with GitHub API integration for "last updated" badge and hero section with professional content
+   - **Files**: [6 files]
+      - `app/page.tsx`: Landing page with ISR and GitHub API integration
+      - `components/landing/HeroSection.tsx`: Hero section with bio, CTAs, and last updated badge
+      - `components/landing/CTAButtons.tsx`: Call-to-action buttons with proper responsive behavior
+      - `lib/github.ts`: GitHub API utilities with caching and error handling
+      - `app/api/github/last-commit/route.ts`: API route for GitHub commit data with 1-hour cache
+      - `components/ui/LastUpdatedBadge.tsx`: Clock icon badge component with loading states
+   - **Step Dependencies**: Step 2, Step 4
+   - **User Instructions**: Configure GitHub API token, test API integration and caching behavior
+
+## Section 6: Recipe System - Core Features
+
+- [ ] **Step 8: Recipe Listing and Basic Search**
+   - **Task**: Implement recipe listing page with grid layout, basic search functionality, and filter pills
+   - **Files**: [9 files]
+      - `app/recipes/page.tsx`: Recipe listing page with server-side search and filtering
+      - `components/recipes/RecipeGrid.tsx`: CSS Grid layout for recipe cards with responsive behavior
+      - `components/recipes/RecipeCard.tsx`: Individual recipe card with hover animations and metadata
+      - `components/recipes/SearchBar.tsx`: Search input with debouncing and clear functionality
+      - `components/recipes/FilterPills.tsx`: Horizontal scrollable filter system
+      - `components/recipes/RecipeFilters.tsx`: Complete filter interface with state management
+      - `components/recipes/NoResults.tsx`: Empty state component with helpful suggestions
+      - `hooks/useRecipeSearch.ts`: Custom hook for search state and debouncing (300ms)
+      - `lib/utils/recipe-helpers.ts`: Recipe formatting, time conversion, and display utilities
+   - **Step Dependencies**: Step 4, Step 6
+   - **User Instructions**: Add sample recipe data, test search and filtering functionality
+
+- [ ] **Step 9: Recipe Detail Pages with Interactive Features**
+   - **Task**: Create dynamic recipe detail pages with ingredients checklist, serving scaling, and print optimization
+   - **Files**: [10 files]
+      - `app/recipes/[slug]/page.tsx`: Dynamic recipe detail page with static params generation
+      - `components/recipes/RecipeHeader.tsx`: Recipe title, metadata pills, and action buttons
+      - `components/recipes/IngredientsSection.tsx`: Interactive ingredients checklist with scaling
+      - `components/recipes/InstructionsSection.tsx`: Step-by-step instructions with progress tracking
+      - `components/recipes/ServingScaler.tsx`: Serving size adjustment controls
+      - `components/recipes/RecipeActions.tsx`: Print, copy, and back navigation buttons
+      - `components/recipes/RecipeMetadata.tsx`: Cook time, prep time, difficulty display
+      - `components/ui/Checkbox.tsx`: Custom checkbox component with strike-through animation
+      - `hooks/useRecipeInteractions.ts`: State management for checklist and scaling
+      - `app/recipes/[slug]/print.css`: Print-optimized styles for recipe pages
+   - **Step Dependencies**: Step 8
+   - **User Instructions**: Test interactive features, print functionality, and mobile responsiveness
+
+## Section 7: Recipe System - Advanced Features
+
+- [ ] **Step 10: Advanced Search and Loading States**
+   - **Task**: Enhance search with MongoDB text indexing, skeleton loading states, and error handling
+   - **Files**: [7 files]
+      - `components/ui/SkeletonCard.tsx`: Skeleton loading component for recipe cards
+      - `components/recipes/SearchLoading.tsx`: Search-specific loading states with pulse animation
+      - `components/recipes/SearchError.tsx`: Error states with retry functionality
+      - `lib/search/mongodb-search.ts`: Advanced MongoDB text search with scoring
+      - `lib/search/search-suggestions.ts`: Search suggestion algorithms and popular queries
+      - `hooks/useDebounce.ts`: Reusable debounce hook for search optimization
+      - `components/recipes/SearchSuggestions.tsx`: Search suggestion dropdown component
+   - **Step Dependencies**: Step 8, Step 9
+   - **User Instructions**: Configure MongoDB text indexes, test search performance and error states
+
+## Section 8: Blog System Implementation
+
+- [ ] **Step 11: MDX Processing and Blog Foundation**
+   - **Task**: Set up MDX processing pipeline with syntax highlighting and blog listing functionality
+   - **Files**: [8 files]
+      - `lib/mdx.ts`: MDX processing with remark/rehype plugins and syntax highlighting
+      - `app/blog/page.tsx`: Blog listing page with post cards and metadata
+      - `app/blog/[slug]/page.tsx`: Dynamic blog post pages with MDX rendering
+      - `components/blog/BlogCard.tsx`: Blog post card with hover effects and read time
+      - `components/blog/BlogPost.tsx`: Full blog post layout with typography
+      - `components/blog/TableOfContents.tsx`: Auto-generated TOC from headings
+      - `components/blog/ReadingProgress.tsx`: Reading progress bar component
+      - `lib/blog-helpers.ts`: Blog utilities for read time calculation and TOC generation
+   - **Step Dependencies**: Step 4, Step 6
+   - **User Instructions**: Install MDX dependencies, test syntax highlighting, verify blog post rendering
+
+- [ ] **Step 12: Blog Navigation and SEO Optimization**
+   - **Task**: Add blog navigation aids, SEO metadata, and social sharing capabilities
+   - **Files**: [6 files]
+      - `components/blog/BlogNavigation.tsx`: Previous/next post navigation
+      - `components/blog/ShareButtons.tsx`: Social sharing buttons with native APIs
+      - `components/blog/BackToTop.tsx`: Scroll-to-top button with smooth scrolling
+      - `lib/seo/blog-metadata.ts`: Dynamic metadata generation for blog posts
+      - `components/blog/CodeBlock.tsx`: Enhanced code blocks with copy functionality
+      - `hooks/useReadingProgress.ts`: Hook for tracking reading progress percentage
+   - **Step Dependencies**: Step 11
+   - **User Instructions**: Test SEO metadata generation, social sharing, and reading experience
+
+## Section 9: Admin Interface Implementation
+
+- [ ] **Step 13: Admin Dashboard and Authentication Guards**
+   - **Task**: Create protected admin dashboard with recipe management overview and authentication integration
+   - **Files**: [9 files]
+      - `app/admin/layout.tsx`: Admin layout with authentication guards and navigation
+      - `app/admin/page.tsx`: Admin dashboard with statistics and quick actions
+      - `app/admin/recipes/page.tsx`: Recipe management listing with search and bulk actions
+      - `components/admin/AdminNav.tsx`: Admin-specific navigation with role-based visibility
+      - `components/admin/StatsCards.tsx`: Dashboard statistics cards (total recipes, recent activity)
+      - `components/admin/QuickActions.tsx`: Dashboard quick action buttons
+      - `components/admin/RecipeTable.tsx`: Data table for recipe management with sorting
+      - `lib/auth/admin-guards.ts`: Server-side authentication guards for admin routes
+      - `hooks/useAdminAuth.ts`: Client-side admin authentication state management
+   - **Step Dependencies**: Step 5, Step 8
+   - **User Instructions**: Test admin authentication flow, verify protected routes work correctly
+
+- [ ] **Step 14: Recipe Management Forms and Validation**
+   - **Task**: Implement recipe creation/editing forms with real-time validation and preview functionality
+   - **Files**: [12 files]
+      - `app/admin/recipes/create/page.tsx`: Recipe creation page with form and preview
+      - `app/admin/recipes/[id]/edit/page.tsx`: Recipe editing page with existing data
+      - `components/admin/RecipeForm.tsx`: Main recipe form with progressive disclosure
+      - `components/admin/RecipePreview.tsx`: Live preview pane with mobile/desktop toggle
+      - `components/admin/IngredientsInput.tsx`: Dynamic ingredients list input component
+      - `components/admin/InstructionsInput.tsx`: Step-by-step instructions input with reordering
+      - `components/admin/TagSelector.tsx`: Tag selection with autocomplete and creation
+      - `components/admin/ImageUpload.tsx`: Drag-and-drop image upload with optimization
+      - `components/admin/FormValidation.tsx`: Real-time validation feedback component
+      - `lib/validations/admin-forms.ts`: Extended Zod schemas for admin form validation
+      - `lib/image-upload.ts`: Image processing and upload utilities
+      - `hooks/useFormValidation.ts`: Real-time form validation state management
+   - **Step Dependencies**: Step 13
+   - **User Instructions**: Test form validation, image upload, and preview functionality
+
+## Section 10: External Integrations & Performance
+
+- [ ] **Step 15: Image Optimization and File Management**
+   - **Task**: Implement image upload, optimization, and storage system with proper error handling
+   - **Files**: [5 files]
+      - `app/api/upload/route.ts`: Image upload API endpoint with validation and processing
+      - `lib/image/optimization.ts`: Image resize, compression, and format conversion
+      - `lib/image/storage.ts`: File storage utilities (Vercel Blob or similar)
+      - `components/ui/ImageUploadZone.tsx`: Drag-and-drop upload component with progress
+      - `lib/image/validation.ts`: Image file validation (size, type, dimensions)
+   - **Step Dependencies**: Step 14
+   - **User Instructions**: Configure image storage service, test upload and optimization pipeline
+
+- [ ] **Step 16: SEO Optimization and Metadata**
+   - **Task**: Implement comprehensive SEO with dynamic metadata, structured data, and sitemap generation
+   - **Files**: [8 files]
+      - `app/sitemap.ts`: Dynamic sitemap generation for recipes and blog posts
+      - `app/robots.txt`: Search engine directives and sitemap reference
+      - `lib/seo/metadata.ts`: Dynamic metadata generation for all page types
+      - `lib/seo/structured-data.ts`: Schema.org structured data for recipes and articles
+      - `components/seo/StructuredData.tsx`: JSON-LD structured data component
+      - `lib/seo/social-cards.ts`: Open Graph and Twitter Card generation
+      - `app/opengraph-image.tsx`: Dynamic OG image generation
+      - `lib/analytics/tracking.ts`: Performance and user interaction tracking setup
+   - **Step Dependencies**: Step 9, Step 11
+   - **User Instructions**: Test SEO metadata, verify structured data with Google's testing tool
+
+## Section 11: Performance Optimization & Error Handling
+
+- [ ] **Step 17: Error Handling and Loading States**
+   - **Task**: Implement comprehensive error boundaries, loading states, and offline functionality
+   - **Files**: [9 files]
+      - `app/error.tsx`: Global error boundary with user-friendly error pages
+      - `app/not-found.tsx`: Custom 404 page with navigation suggestions
+      - `app/loading.tsx`: Global loading page with branded skeleton
+      - `components/error/ErrorBoundary.tsx`: React error boundary component
+      - `components/error/ErrorFallback.tsx`: Error fallback UI with retry functionality
+      - `lib/error/error-handling.ts`: Error classification and reporting utilities
+      - `lib/error/retry-logic.ts`: Exponential backoff and retry mechanisms
+      - `hooks/useErrorHandler.ts`: Global error handling hook
+      - `components/ui/OfflineIndicator.tsx`: Network status and offline mode indicator
+   - **Step Dependencies**: All previous steps
+   - **User Instructions**: Test error scenarios, network failures, and recovery mechanisms
+
+- [ ] **Step 18: Performance Optimization and Caching**
+   - **Task**: Implement caching strategies, code splitting, and performance monitoring
+   - **Files**: [7 files]
+      - `lib/cache/strategies.ts`: Caching strategies for different data types
+      - `lib/performance/monitoring.ts`: Core Web Vitals and performance tracking
+      - `components/performance/LazyImage.tsx`: Lazy loading image component with intersection observer
+      - `lib/performance/code-splitting.ts`: Dynamic imports and route-based code splitting
+      - `app/manifest.ts`: Web app manifest for PWA capabilities
+      - `lib/performance/prefetch.ts`: Intelligent prefetching for critical resources
+      - `next.config.js`: Updated with performance optimizations and caching headers
+   - **Step Dependencies**: Step 16, Step 17
+   - **User Instructions**: Test performance metrics, verify caching behavior, check Core Web Vitals
+
+## Section 12: Deployment & Final Configuration
+
+- [ ] **Step 19: Vercel Deployment Configuration**
+   - **Task**: Configure Vercel deployment with environment variables, build optimization, and monitoring
+   - **Files**: [6 files]
+      - `vercel.json`: Vercel configuration with redirects, headers, and function settings
+      - `.vercelignore`: Files to exclude from deployment
+      - `scripts/deploy.sh`: Deployment script with pre-deployment checks
+      - `lib/config/environment.ts`: Environment variable validation and configuration
+      - `docs/DEPLOYMENT.md`: Deployment guide and environment setup instructions
+      - `package.json`: Updated with deployment scripts and production dependencies
+   - **Step Dependencies**: All previous steps
+   - **User Instructions**: Configure Vercel project, set environment variables, test deployment pipeline
+
+- [ ] **Step 20: Final Testing and Quality Assurance**
+   - **Task**: Comprehensive testing suite and final quality checks before production release
+   - **Files**: [8 files]
+      - `tests/components/Recipe.test.tsx`: Component testing for recipe functionality
+      - `tests/api/server-actions.test.ts`: Server action testing with mock data
+      - `tests/integration/auth.test.ts`: Authentication flow integration tests
+      - `tests/e2e/user-journey.test.ts`: End-to-end user journey testing
+      - `lib/testing/test-utils.ts`: Testing utilities and mock data generators
+      - `docs/TESTING.md`: Testing guide and coverage requirements
+      - `scripts/test-production.js`: Production environment testing script
+      - `README.md`: Complete project documentation with setup and usage instructions
+   - **Step Dependencies**: Step 19
+   - **User Instructions**: Run test suite, verify all functionality, conduct accessibility audit, test performance targets
+</context>

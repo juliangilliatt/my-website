@@ -1,0 +1,241 @@
+# Robots.txt for Recipe Blog & Food Website
+# This file tells search engines which pages to crawl and which to avoid
+
+User-agent: *
+Allow: /
+
+# Allow all public pages
+Allow: /recipes/
+Allow: /blog/
+Allow: /about
+Allow: /contact
+Allow: /search
+
+# Allow category and tag pages
+Allow: /recipes/category/
+Allow: /recipes/tag/
+Allow: /blog/category/
+Allow: /blog/tag/
+
+# Allow RSS feeds
+Allow: /feed.xml
+Allow: /recipes/feed.xml
+Allow: /blog/feed.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Disallow authentication and user pages
+Disallow: /auth/
+Disallow: /signin
+Disallow: /signup
+Disallow: /profile/
+Disallow: /account/
+
+# Disallow duplicate content and parameters
+Disallow: /search?*
+Disallow: /*?page=*
+Disallow: /*?sort=*
+Disallow: /*?filter=*
+Disallow: /*?utm_*
+Disallow: /*?fbclid=*
+Disallow: /*?gclid=*
+
+# Disallow temporary and development files
+Disallow: /tmp/
+Disallow: /temp/
+Disallow: /dev/
+Disallow: /test/
+Disallow: /.git/
+Disallow: /.env
+Disallow: /node_modules/
+
+# Disallow version control and config files
+Disallow: /.htaccess
+Disallow: /robots.txt.bak
+Disallow: /sitemap.xml.bak
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /yarn.lock
+
+# Disallow common CMS and framework files
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-content/
+Disallow: /admin-ajax.php
+Disallow: /xmlrpc.php
+
+# Disallow printer-friendly and mobile versions
+Disallow: /print/
+Disallow: /mobile/
+Disallow: /*?print=*
+Disallow: /*?mobile=*
+
+# Disallow empty or under construction pages
+Disallow: /coming-soon
+Disallow: /under-construction
+Disallow: /maintenance
+
+# Disallow duplicate recipe formats
+Disallow: /recipes/*/print
+Disallow: /recipes/*/pdf
+Disallow: /recipes/*/mobile
+
+# Allow specific bots with special rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay: 1
+
+User-agent: Twitterbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: LinkedInBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: PinterestBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: WhatsApp
+Allow: /
+Crawl-delay: 1
+
+User-agent: Applebot
+Allow: /
+Crawl-delay: 1
+
+# Disallow aggressive crawlers and scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: MauiBot
+Disallow: /
+
+User-agent: AlphaBot
+Disallow: /
+
+User-agent: JobboerseBot
+Disallow: /
+
+User-agent: seoscanners
+Disallow: /
+
+User-agent: SiteAnalyzerBot
+Disallow: /
+
+User-agent: contentking
+Disallow: /
+
+# Allow recipe-specific bots
+User-agent: RecipeBot
+Allow: /recipes/
+Disallow: /
+
+User-agent: FoodBot
+Allow: /recipes/
+Allow: /blog/
+Disallow: /
+
+# Set crawl delay for general bots
+User-agent: *
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://localhost:3000/sitemap.xml
+
+# Additional sitemaps for content types
+Sitemap: https://localhost:3000/sitemap-recipes.xml
+Sitemap: https://localhost:3000/sitemap-blog.xml
+Sitemap: https://localhost:3000/sitemap-categories.xml
+
+# RSS feeds for content discovery
+# These aren't standard robots.txt entries but some crawlers use them
+# Feed: https://localhost:3000/feed.xml
+# Feed: https://localhost:3000/recipes/feed.xml
+# Feed: https://localhost:3000/blog/feed.xml
+
+# Host directive (some search engines use this)
+Host: https://localhost:3000
+
+# Clean URLs preference
+# This tells search engines to prefer clean URLs over query parameters
+# Request-rate: 1/1s
+# Visit-time: 0400-0800
+
+# Cache control for robots.txt itself
+# Cache-Control: max-age=3600
+
+# Comments and notes:
+# - This robots.txt allows all major search engines to crawl public content
+# - Admin areas and API endpoints are blocked for security
+# - Duplicate content from URL parameters is blocked
+# - Aggressive SEO bots are blocked to preserve server resources
+# - Recipe and food-specific bots are given special permissions
+# - Sitemap locations are provided for better content discovery
+# - Social media bots are allowed for better sharing
+
+# Update frequency: This file should be updated whenever:
+# - New admin areas are added
+# - New API endpoints are created
+# - URL structure changes
+# - New content types are added
+# - Security requirements change
+
+# Testing: Use Google Search Console's robots.txt tester to validate changes
+# Also test with: curl -A "Googlebot" https://localhost:3000/robots.txt
+
+# Performance notes:
+# - Keep this file under 500KB for optimal loading
+# - Avoid too many User-agent directives
+# - Use wildcards (*) efficiently
+# - Test crawl delays to balance SEO and server performance

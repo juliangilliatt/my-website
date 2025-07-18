@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Offline - Recipe Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .status.online {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .status.offline {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .features {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .features h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            padding: 8px 0;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .features li:before {
+            content: "✓ ";
+            color: #2ecc71;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .icon {
+                font-size: 60px;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🍳</div>
+        <h1>You're Offline</h1>
+        <p>Don't worry! You can still browse cached recipes and content. Some features may be limited until you reconnect.</p>
+        
+        <div class="actions">
+            <button onclick="retryConnection()">
+                <span class="spinner" id="spinner" style="display: none;"></span>
+                Try Again
+            </button>
+            <button onclick="goHome()">Go to Homepage</button>
+            <button onclick="viewCachedRecipes()">View Cached Recipes</button>
+        </div>
+
+        <div class="status offline" id="status">
+            <strong>Status:</strong> Offline - Check your internet connection
+        </div>
+
+        <div class="features">
+            <h3>Available While Offline:</h3>
+            <ul>
+                <li>Browse previously viewed recipes</li>
+                <li>View saved recipes</li>
+                <li>Access cooking timers</li>
+                <li>Use measurement converter</li>
+                <li>Read cached blog posts</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Check online status
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            if (navigator.onLine) {
+                statusEl.className = 'status online';
+                statusEl.innerHTML = '<strong>Status:</strong> Back online! All features available.';
+            } else {
+                statusEl.className = 'status offline';
+                statusEl.innerHTML = '<strong>Status:</strong> Offline - Check your internet connection';
+            }
+        }
+
+        // Retry connection
+        function retryConnection() {
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'inline-block';
+            
+            // Test connection
+            fetch('/api/health', { 
+                method: 'GET',
+                cache: 'no-cache',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Connection restored
+                    window.location.reload();
+                } else {
+                    throw new Error('Connection failed');
+                }
+            })
+            .catch(() => {
+                // Still offline
+                spinner.style.display = 'none';
+                updateStatus();
+                
+                // Show temporary message
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Still Offline';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            });
+        }
+
+        // Navigate to homepage
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        // View cached recipes
+        function viewCachedRecipes() {
+            window.location.href = '/recipes?offline=true';
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            updateStatus();
+            // Auto-reload after a brief delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+
+        window.addEventListener('offline', updateStatus);
+
+        // Initialize status
+        updateStatus();
+
+        // Periodically check connection
+        setInterval(() => {
+            updateStatus();
+        }, 30000); // Check every 30 seconds
+
+        // Service Worker registration check
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                console.log('Service Worker is ready');
+                
+                // Listen for updates
+                registration.addEventListener('updatefound', () => {
+                    console.log('Service Worker update found');
+                });
+            });
+        }
+
+        // Handle back button
+        window.addEventListener('popstate', (event) => {
+            if (navigator.onLine) {
+                // If back online, allow normal navigation
+                return;
+            }
+            // If still offline, prevent navigation to external URLs
+            event.preventDefault();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'r' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                retryConnection();
+            } else if (event.key === 'h' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                goHome();
+            }
+        });
+
+        // Show offline notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('You\'re Offline', {
+                body: 'Limited functionality available. Cached content is still accessible.',
+                icon: '/images/icons/icon-192x192.png',
+                tag: 'offline-notification'
+            });
+        }
+    </script>
+</body>
+</html>
