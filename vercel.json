@@ -31,28 +31,23 @@
   "functions": {
     "app/api/recipes/route.ts": {
       "maxDuration": 30,
-      "memory": 1024,
-      "regions": ["iad1", "sfo1", "lhr1"]
+      "memory": 1024
     },
     "app/api/search/route.ts": {
       "maxDuration": 15,
-      "memory": 512,
-      "regions": ["iad1", "sfo1", "lhr1"]
+      "memory": 512
     },
     "app/api/blog/route.ts": {
       "maxDuration": 20,
-      "memory": 512,
-      "regions": ["iad1", "sfo1", "lhr1"]
+      "memory": 512
     },
     "app/api/upload/route.ts": {
       "maxDuration": 60,
-      "memory": 2048,
-      "regions": ["iad1"]
+      "memory": 2048
     },
     "app/api/image/route.ts": {
       "maxDuration": 30,
-      "memory": 1024,
-      "regions": ["iad1", "sfo1", "lhr1"]
+      "memory": 1024
     }
   },
   "headers": [
