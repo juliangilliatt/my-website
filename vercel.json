@@ -239,9 +239,6 @@
     "dangerouslyAllowSVG": false
   },
   "framework": "nextjs",
-  "edge": {
-    "regions": ["iad1", "sfo1", "lhr1"]
-  },
   "routes": [
     {
       "src": "/health",
