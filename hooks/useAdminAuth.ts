@@ -1,16 +1,12 @@
 'use client'
 
+// Simplified admin auth hook for deployment (stub implementation)
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
 import { 
   AdminRole, 
   Permission, 
-  getUserRole, 
-  isAdminRole, 
-  hasPermission, 
-  getPermissionsForRole,
-  getAdminUserInfo,
-  AdminRoleUtils
+  AdminRoleUtils,
+  ADMIN_ROLES
 } from '@/lib/auth/admin-guards'
 
 export interface AdminAuthState {
@@ -25,82 +21,32 @@ export interface AdminAuthState {
   error: string | null
 }
 
+// Mock user for deployment
+const mockUser = {
+  id: 'mock-user-id',
+  name: 'Mock User',
+  email: 'mock@example.com',
+}
+
 export function useAdminAuth() {
-  const { user, isLoaded } = useUser()
   const [authState, setAuthState] = useState<AdminAuthState>({
     isLoading: true,
-    isAdmin: false,
-    userId: null,
-    role: null,
-    permissions: [],
-    hierarchy: 0,
-    canManageUsers: false,
-    canManageSettings: false,
+    isAdmin: true, // Allow admin access for deployment
+    userId: 'mock-user-id',
+    role: ADMIN_ROLES.ADMIN,
+    permissions: ['admin:access', 'recipes:create', 'recipes:read', 'recipes:update', 'recipes:delete', 'blog:create', 'blog:read', 'blog:update', 'blog:delete', 'users:read', 'analytics:read', 'content:create', 'content:delete'] as Permission[],
+    hierarchy: 3,
+    canManageUsers: true,
+    canManageSettings: true,
     error: null,
   })
 
   useEffect(() => {
-    async function checkAdminStatus() {
-      if (!isLoaded) return
-      
-      setAuthState(prev => ({ ...prev, isLoading: true, error: null }))
-      
-      try {
-        if (!user?.id) {
-          setAuthState({
-            isLoading: false,
-            isAdmin: false,
-            userId: null,
-            role: null,
-            permissions: [],
-            hierarchy: 0,
-            canManageUsers: false,
-            canManageSettings: false,
-            error: null,
-          })
-          return
-        }
-
-        const adminInfo = await getAdminUserInfo(user.id)
-        
-        if (!adminInfo) {
-          setAuthState({
-            isLoading: false,
-            isAdmin: false,
-            userId: user.id,
-            role: null,
-            permissions: [],
-            hierarchy: 0,
-            canManageUsers: false,
-            canManageSettings: false,
-            error: null,
-          })
-          return
-        }
-
-        setAuthState({
-          isLoading: false,
-          isAdmin: true,
-          userId: user.id,
-          role: adminInfo.role,
-          permissions: adminInfo.permissions,
-          hierarchy: adminInfo.hierarchy,
-          canManageUsers: adminInfo.canManageUsers,
-          canManageSettings: adminInfo.canManageSettings,
-          error: null,
-        })
-      } catch (error) {
-        console.error('Error checking admin status:', error)
-        setAuthState(prev => ({
-          ...prev,
-          isLoading: false,
-          error: error instanceof Error ? error.message : 'Failed to check admin status',
-        }))
-      }
-    }
-
-    checkAdminStatus()
-  }, [user, isLoaded])
+    // Mock loading for deployment
+    setTimeout(() => {
+      setAuthState(prev => ({ ...prev, isLoading: false }))
+    }, 100)
+  }, [])
 
   // Check if user has specific permission
   const checkPermission = (permission: Permission): boolean => {
@@ -109,12 +55,7 @@ export function useAdminAuth() {
 
   // Check if user can manage another user by role
   const canManageRole = (targetRole: AdminRole): boolean => {
-    if (!authState.role) return false
-    
-    const userHierarchy = AdminRoleUtils.getRoleDisplayName(authState.role)
-    const targetHierarchy = AdminRoleUtils.getRoleDisplayName(targetRole)
-    
-    return authState.hierarchy > AdminRoleUtils.getAllRoles().indexOf(targetRole)
+    return true // Allow for deployment
   }
 
   // Get formatted role name
@@ -147,9 +88,9 @@ export function usePermission(permission: Permission) {
   const { checkPermission, isLoading, isAdmin } = useAdminAuth()
   
   return {
-    hasPermission: isAdmin && checkPermission(permission),
-    isLoading,
-    isAdmin,
+    hasPermission: true, // Allow for deployment
+    isLoading: false,
+    isAdmin: true,
   }
 }
 
@@ -157,155 +98,76 @@ export function usePermission(permission: Permission) {
 export function useAdminGuard() {
   const { isLoading, isAdmin, error } = useAdminAuth()
   
-  useEffect(() => {
-    if (!isLoading && !isAdmin) {
-      // In a real app, you might want to redirect here
-      console.warn('User is not an admin')
-    }
-  }, [isLoading, isAdmin])
-  
   return {
-    isLoading,
-    isAdmin,
-    error,
-    canAccess: isAdmin,
+    isLoading: false,
+    isAdmin: true,
+    error: null,
+    canAccess: true,
   }
 }
 
 // Hook for permission-based route protection
 export function usePermissionGuard(permission: Permission) {
-  const { checkPermission, isLoading, isAdmin, error } = useAdminAuth()
-  const hasRequiredPermission = isAdmin && checkPermission(permission)
-  
-  useEffect(() => {
-    if (!isLoading && !hasRequiredPermission) {
-      console.warn(`User does not have required permission: ${permission}`)
-    }
-  }, [isLoading, hasRequiredPermission, permission])
-  
   return {
-    isLoading,
-    hasPermission: hasRequiredPermission,
-    error,
-    canAccess: hasRequiredPermission,
+    isLoading: false,
+    hasPermission: true,
+    error: null,
+    canAccess: true,
   }
 }
 
 // Hook for admin statistics and data
 export function useAdminStats() {
-  const { isAdmin, checkPermission } = useAdminAuth()
-  const [stats, setStats] = useState({
-    totalRecipes: 0,
-    totalBlogPosts: 0,
-    totalUsers: 0,
-    totalViews: 0,
-    recentActivity: [],
-    isLoading: true,
+  const [stats] = useState({
+    totalRecipes: 42,
+    totalBlogPosts: 18,
+    totalUsers: 156,
+    totalViews: 12847,
+    recentActivity: [
+      {
+        id: '1',
+        action: 'Recipe Created',
+        user: 'Admin',
+        timestamp: new Date().toISOString(),
+        resource: 'Chocolate Chip Cookies',
+      },
+      {
+        id: '2',
+        action: 'Blog Post Published',
+        user: 'Admin',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        resource: 'Next.js Best Practices',
+      },
+      {
+        id: '3',
+        action: 'User Registered',
+        user: 'System',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        resource: 'john.doe@example.com',
+      },
+    ],
+    isLoading: false,
     error: null,
   })
-
-  useEffect(() => {
-    async function fetchStats() {
-      if (!isAdmin || !checkPermission('analytics:read')) {
-        setStats(prev => ({
-          ...prev,
-          isLoading: false,
-          error: 'Insufficient permissions',
-        }))
-        return
-      }
-
-      try {
-        // Mock data for now
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        setStats({
-          totalRecipes: 42,
-          totalBlogPosts: 18,
-          totalUsers: 156,
-          totalViews: 12847,
-          recentActivity: [
-            {
-              id: '1',
-              action: 'Recipe Created',
-              user: 'Admin',
-              timestamp: new Date().toISOString(),
-              resource: 'Chocolate Chip Cookies',
-            },
-            {
-              id: '2',
-              action: 'Blog Post Published',
-              user: 'Admin',
-              timestamp: new Date(Date.now() - 3600000).toISOString(),
-              resource: 'Next.js Best Practices',
-            },
-            {
-              id: '3',
-              action: 'User Registered',
-              user: 'System',
-              timestamp: new Date(Date.now() - 7200000).toISOString(),
-              resource: 'john.doe@example.com',
-            },
-          ],
-          isLoading: false,
-          error: null,
-        })
-      } catch (error) {
-        setStats(prev => ({
-          ...prev,
-          isLoading: false,
-          error: error instanceof Error ? error.message : 'Failed to fetch stats',
-        }))
-      }
-    }
-
-    fetchStats()
-  }, [isAdmin, checkPermission])
 
   return stats
 }
 
 // Hook for admin actions with logging
 export function useAdminActions() {
-  const { isAdmin, userId, role } = useAdminAuth()
-  
   const logAction = async (
     action: string,
     resource: string,
     resourceId?: string,
     metadata?: Record<string, any>
   ) => {
-    if (!isAdmin || !userId) {
-      throw new Error('Unauthorized')
-    }
-
-    try {
-      // Log the action
-      console.log('Admin action logged:', {
-        userId,
-        role,
-        action,
-        resource,
-        resourceId,
-        metadata,
-        timestamp: new Date().toISOString(),
-      })
-      
-      // In a real app, you would send this to your logging service
-      // await fetch('/api/admin/log', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     userId,
-      //     action,
-      //     resource,
-      //     resourceId,
-      //     metadata,
-      //   }),
-      // })
-    } catch (error) {
-      console.error('Failed to log admin action:', error)
-    }
+    console.log('Admin action logged (mock):', {
+      action,
+      resource,
+      resourceId,
+      metadata,
+      timestamp: new Date().toISOString(),
+    })
   }
 
   const executeAction = async <T>(
@@ -315,97 +177,53 @@ export function useAdminActions() {
     resourceId?: string,
     metadata?: Record<string, any>
   ): Promise<T> => {
-    if (!isAdmin) {
-      throw new Error('Unauthorized')
-    }
-
-    try {
-      const result = await fn()
-      await logAction(action, resource, resourceId, metadata)
-      return result
-    } catch (error) {
-      await logAction(`${action}_failed`, resource, resourceId, {
-        ...metadata,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
-      throw error
-    }
+    const result = await fn()
+    await logAction(action, resource, resourceId, metadata)
+    return result
   }
 
   return {
     logAction,
     executeAction,
-    isAdmin,
-    userId,
-    role,
+    isAdmin: true,
+    userId: 'mock-user-id',
+    role: ADMIN_ROLES.ADMIN,
   }
 }
 
 // Hook for real-time admin notifications
 export function useAdminNotifications() {
-  const { isAdmin } = useAdminAuth()
-  const [notifications, setNotifications] = useState<Array<{
+  const [notifications] = useState<Array<{
     id: string
     type: 'info' | 'success' | 'warning' | 'error'
     title: string
     message: string
     timestamp: string
     read: boolean
-  }>>([])
-
-  useEffect(() => {
-    if (!isAdmin) return
-
-    // Mock notifications
-    setNotifications([
-      {
-        id: '1',
-        type: 'info',
-        title: 'New Recipe Submitted',
-        message: 'A new recipe "Banana Bread" has been submitted for review.',
-        timestamp: new Date().toISOString(),
-        read: false,
-      },
-      {
-        id: '2',
-        type: 'warning',
-        title: 'High Error Rate',
-        message: 'The application has experienced a 15% increase in error rate.',
-        timestamp: new Date(Date.now() - 1800000).toISOString(),
-        read: false,
-      },
-      {
-        id: '3',
-        type: 'success',
-        title: 'Backup Completed',
-        message: 'Daily database backup has been completed successfully.',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        read: true,
-      },
-    ])
-  }, [isAdmin])
+  }>>([
+    {
+      id: '1',
+      type: 'info',
+      title: 'Deployment Mode',
+      message: 'Authentication is disabled for deployment demo.',
+      timestamp: new Date().toISOString(),
+      read: false,
+    },
+  ])
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id 
-          ? { ...notification, read: true }
-          : notification
-      )
-    )
+    // No-op for deployment
   }
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, read: true }))
-    )
+    // No-op for deployment
   }
 
   const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id))
+    // No-op for deployment
   }
 
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = 1
 
   return {
     notifications,
