@@ -21,7 +21,7 @@ export default function HomePage() {
           <div className="flex justify-center gap-4 flex-wrap">
             <a 
               href="/recipes" 
-              className="px-6 py-3 bg-primary-500 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-semibold uppercase tracking-wide transition-all duration-150"
+              className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-semibold uppercase tracking-wide transition-all duration-150"
             >
               View Recipes
             </a>
