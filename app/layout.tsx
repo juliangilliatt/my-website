@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { NavigationProvider } from '@/hooks/useNavigation'
 import './globals.css'
 
 const inter = Inter({
@@ -23,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className="antialiased">
-        {children}
+        <NavigationProvider>
+          {children}
+        </NavigationProvider>
       </body>
     </html>
   )
