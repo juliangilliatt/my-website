@@ -15,14 +15,14 @@ export function Footer() {
           <div className="space-y-4">
             <Link href="/" className="block">
               <h3 className="text-xl font-mono font-bold text-black uppercase tracking-wide">
-                My Website
+                {SITE_CONFIG.name}
               </h3>
               <p className="text-sm font-mono text-neutral-600 mt-1">
-                Recipes & Blog
+                {SITE_CONFIG.description}
               </p>
             </Link>
             <p className="text-sm font-mono text-neutral-600">
-              A brutalist portfolio website featuring recipes and blog posts about development and cooking.
+              Developer, creator, and cooking enthusiast sharing recipes and insights.
             </p>
           </div>
 

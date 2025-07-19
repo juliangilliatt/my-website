@@ -157,14 +157,14 @@ export const SIZES = {
 
 // Site configuration
 export const SITE_CONFIG = {
-  name: 'My Website',
-  description: 'A brutalist portfolio website with recipes and blog',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  author: 'Your Name',
+  name: 'Julian Gilliatt',
+  description: 'Developer, creator, and cooking enthusiast',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://juliangilliatt.com',
+  author: 'Julian Gilliatt',
   social: {
-    twitter: '@yourusername',
-    github: 'yourusername',
-    email: 'your.email@example.com',
+    twitter: '@juliangilliatt',
+    github: 'juliangilliatt',
+    email: 'hello@juliangilliatt.com',
   },
   navigation: [
     { name: 'Home', href: '/' },
@@ -172,6 +172,7 @@ export const SITE_CONFIG = {
     { name: 'Blog', href: '/blog' },
     { name: 'Admin', href: '/admin' },
   ],
+  profileImage: '/images/profile.jpg',
 } as const
 
 // Recipe categories and tags

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { SITE_CONFIG } from '@/lib/constants'
 
 interface CTAButtonsProps {
   className?: string
@@ -218,7 +219,7 @@ export function SocialCTAButtons({
   return (
     <div className={containerClasses}>
       <a
-        href="https://github.com/your-username"
+        href={`https://github.com/${SITE_CONFIG.social.github}`}
         target="_blank"
         rel="noopener noreferrer"
         className={buttonClasses}
@@ -227,7 +228,7 @@ export function SocialCTAButtons({
         <GitHubIcon className={iconSizes[size]} />
       </a>
       <a
-        href="https://twitter.com/your-username"
+        href={`https://twitter.com/${SITE_CONFIG.social.twitter.replace('@', '')}`}
         target="_blank"
         rel="noopener noreferrer"
         className={buttonClasses}
@@ -236,7 +237,7 @@ export function SocialCTAButtons({
         <TwitterIcon className={iconSizes[size]} />
       </a>
       <a
-        href="mailto:your-email@example.com"
+        href={`mailto:${SITE_CONFIG.social.email}`}
         className={buttonClasses}
         aria-label="Email"
       >
