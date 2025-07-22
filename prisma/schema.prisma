@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -30,6 +31,9 @@ model User {
   // Relations
   recipes   Recipe[]
   blogPosts BlogPost[]
+  images    Image[]
+  sessions  Session[]
+  accounts  Account[]
 
   @@map("users")
 }
@@ -69,7 +73,6 @@ model Recipe {
   tags   Tag[]    @relation(fields: [tagIds], references: [id])
 
   @@map("recipes")
-  @@index([slug])
   @@index([category])
   @@index([cuisine])
   @@index([difficulty])
@@ -98,8 +101,6 @@ model Tag {
   blogPosts   BlogPost[] @relation(fields: [blogPostIds], references: [id])
 
   @@map("tags")
-  @@index([slug])
-  @@index([name])
 }
 
 model BlogPost {
@@ -127,7 +128,6 @@ model BlogPost {
   tags   Tag[]    @relation(fields: [tagIds], references: [id])
 
   @@map("blog_posts")
-  @@index([slug])
   @@index([category])
   @@index([status])
   @@index([featured])
@@ -198,7 +198,6 @@ model Session {
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
-  @@index([sessionToken])
   @@index([userId])
   @@index([expires])
 }
@@ -236,7 +235,6 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
-  @@index([token])
   @@index([expires])
 }
 
@@ -253,7 +251,6 @@ model Newsletter {
   updatedAt   DateTime @updatedAt
 
   @@map("newsletter")
-  @@index([email])
   @@index([subscribed])
   @@index([confirmed])
   @@index([createdAt])
