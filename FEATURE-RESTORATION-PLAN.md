@@ -8,10 +8,27 @@ This document tracks the incremental restoration of features that were stripped 
 
 The website was stripped back from a full-featured recipe and blog platform to a basic static site for deployment. This plan outlines step-by-step restoration while maintaining build stability.
 
+## External Services Required
+
+### 🔴 Required Services (for core functionality)
+1. **MongoDB Atlas** - Database & search (free tier available)
+2. **Clerk** - Authentication (free tier available)
+3. **Vercel Blob** - Image storage (Pro plan required)
+
+### 🟡 Recommended Services
+1. **GitHub Token** - For repository info
+2. **Email Service** - For contact forms (Gmail/SendGrid/Mailgun)
+
+### 🟢 Optional Services
+1. **Redis** - Caching (Upstash free tier)
+2. **Sentry** - Error tracking
+3. **CDN** - Performance optimization
+
 ## Progress Tracking
 
 - [x] Phase 1: Environment & Configuration Setup ✅
-- [x] Phase 2: Database Infrastructure ✅  
+- [x] Phase 2: Database Infrastructure ✅
+- [x] Phase 3: Authentication Foundation ✅  
 - [ ] Phase 3: Authentication Foundation
 - [ ] Phase 4: Content Management System
 - [ ] Phase 5: File Upload System
@@ -73,27 +90,27 @@ The website was stripped back from a full-featured recipe and blog platform to a
 ## **Phase 3: Authentication Foundation**
 
 ### **Step 3.1: Clerk Dependencies**
-- [ ] Add `@clerk/nextjs` back to package.json
-- [ ] Install dependency: `npm install @clerk/nextjs`
-- [ ] **Build Check**: `npm run build`
+- [x] Add `@clerk/nextjs` back to package.json (already installed)
+- [x] Install dependency: `npm install @clerk/nextjs`
+- [x] **Build Check**: `npm run build` ✅
 
 ### **Step 3.2: Auth Configuration (Disabled)**
-- [ ] Add Clerk environment variables (with placeholder values)
-- [ ] Restore Clerk provider in root layout (with feature flag to disable)
-- [ ] **Build Check**: Ensure no import errors
+- [x] Add Clerk environment variables (with placeholder values)
+- [x] Restore Clerk provider in root layout (with feature flag to disable)
+- [x] **Build Check**: Ensure no import errors ✅
 
 ### **Step 3.3: Auth Functions (Stubbed)**
-- [ ] Restore auth function signatures in `lib/auth.ts`
-- [ ] Keep all functions returning mock data
-- [ ] **Build Check**: TypeScript compilation
-- [ ] Restore admin guard signatures in `lib/auth/admin-guards.ts`
-- [ ] **Build Check**: Final test
+- [x] Restore auth function signatures in `lib/auth.ts`
+- [x] Keep all functions returning mock data
+- [x] **Build Check**: TypeScript compilation ✅
+- [x] Restore admin guard signatures (included in main auth.ts)
+- [x] **Build Check**: Final test ✅
 
 ### **Step 3.4: Auth Components**
-- [ ] Restore `AuthGuard` component structure (always allow access)
-- [ ] **Build Check**: Component renders without errors
-- [ ] Update sign-in/sign-up pages with proper components (disabled state)
-- [ ] **Build Check**: Pages load correctly
+- [x] Restore `AuthGuard` component structure (always allow access)
+- [x] **Build Check**: Component renders without errors ✅
+- [x] Update sign-in/sign-up pages (existing pages work with disabled auth)
+- [x] **Build Check**: Pages load correctly ✅
 
 ---
 
@@ -144,12 +161,54 @@ The website was stripped back from a full-featured recipe and blog platform to a
 
 ---
 
+## **Phase 5.5: External Service Account Setup**
+
+### **Step 5.5.1: Required Accounts (High Priority)**
+- [ ] **MongoDB Atlas**
+  - [ ] Create account at https://cloud.mongodb.com
+  - [ ] Create a new cluster (free tier available)
+  - [ ] Create database user and password
+  - [ ] Get connection string
+  - [ ] Update `DATABASE_URL` in `.env.local`
+- [ ] **Clerk Authentication**
+  - [ ] Create account at https://clerk.com
+  - [ ] Create new application
+  - [ ] Get publishable key and secret key
+  - [ ] Update `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`
+- [ ] **Vercel Blob Storage**
+  - [ ] Upgrade to Vercel Pro (if not already)
+  - [ ] Enable Blob storage in project settings
+  - [ ] Get read-write token
+  - [ ] Update `BLOB_READ_WRITE_TOKEN`
+
+### **Step 5.5.2: Recommended Accounts (Medium Priority)**
+- [ ] **GitHub Personal Access Token**
+  - [ ] Go to https://github.com/settings/tokens
+  - [ ] Generate new token with `repo` scope
+  - [ ] Update `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`
+- [ ] **Security Secrets**
+  - [ ] Generate random string for `NEXTAUTH_SECRET`
+  - [ ] Generate random string for `WEBHOOK_SECRET`
+
+### **Step 5.5.3: Optional Services (Low Priority)**
+- [ ] **Email Service** (choose one):
+  - [ ] Gmail App Password
+  - [ ] SendGrid API
+  - [ ] Mailgun API
+- [ ] **Redis Cache**:
+  - [ ] Local Redis or Upstash
+- [ ] **Error Tracking**:
+  - [ ] Sentry account
+- [ ] **CDN Configuration**:
+  - [ ] Cloudflare or similar
+
 ## **Phase 6: Live Feature Activation**
 
 ### **Step 6.1: Database Connection**
-- [ ] Set up MongoDB Atlas instance
-- [ ] Add real database URL to environment
-- [ ] Test database connection in development
+- [ ] Verify MongoDB Atlas instance is set up
+- [ ] Test connection string locally
+- [ ] Enable database connection in `lib/prisma.ts`
+- [ ] Run database migrations/push
 - [ ] **Build Check**: `npm run dev` with real DB
 
 ### **Step 6.2: Enable Database Actions**
