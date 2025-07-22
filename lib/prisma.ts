@@ -1,102 +1,120 @@
-// Simplified prisma stub for deployment (no database dependencies)
+import { PrismaClient } from '@prisma/client'
 
-// Mock Prisma client for deployment
-export const prisma = {
-  user: {
-    findUnique: async () => null,
-    findMany: async () => [],
-    create: async () => ({ id: 'mock-id' }),
-    update: async () => ({ id: 'mock-id' }),
-    delete: async () => ({ id: 'mock-id' }),
-    upsert: async () => ({ id: 'mock-id' }),
-  },
-  recipe: {
-    findUnique: async () => null,
-    findMany: async () => [],
-    create: async () => ({ id: 'mock-id' }),
-    update: async () => ({ id: 'mock-id' }),
-    delete: async () => ({ id: 'mock-id' }),
-    count: async () => 0,
-    groupBy: async () => [],
-  },
-  blogPost: {
-    findUnique: async () => null,
-    findMany: async () => [],
-    create: async () => ({ id: 'mock-id' }),
-    update: async () => ({ id: 'mock-id' }),
-    delete: async () => ({ id: 'mock-id' }),
-    count: async () => 0,
-    groupBy: async () => [],
-  },
-  tag: {
-    findUnique: async () => null,
-    findMany: async () => [],
-    create: async () => ({ id: 'mock-id' }),
-    update: async () => ({ id: 'mock-id' }),
-    delete: async () => ({ id: 'mock-id' }),
-    upsert: async () => ({ id: 'mock-id' }),
-    groupBy: async () => [],
-  },
-  analytics: {
-    create: async () => ({ id: 'mock-id' }),
-    count: async () => 0,
-    groupBy: async () => [],
-  },
-  $connect: async () => {},
-  $disconnect: async () => {},
-  $queryRaw: async () => [],
-  $transaction: async (fn: any) => fn(prisma),
+declare global {
+  // Allow global `var` declarations
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined
 }
 
-// Connection management (stub for deployment)
+// Create a single instance of Prisma Client
+// In development, store it globally to prevent multiple instances during hot reloading
+const prismaClientSingleton = () => {
+  // For now, return a Prisma client that's not connected
+  // This allows TypeScript to work properly without actual DB connection
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  })
+}
+
+// Export the Prisma client instance
+export const prisma = globalThis.prisma ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+
+// Connection management (disabled for now)
 export async function connectToDB() {
-  console.log('✅ Mock database connection for deployment')
+  // Disabled for deployment - no actual connection
+  console.log('Database connection disabled for deployment')
+  return Promise.resolve()
 }
 
 export async function disconnectFromDB() {
-  console.log('✅ Mock database disconnection for deployment')
+  // Disabled for deployment
+  console.log('Database disconnection disabled for deployment')
+  return Promise.resolve()
 }
 
-// Health check (stub for deployment)
+// Health check
 export async function checkDBConnection() {
-  return true
+  try {
+    // For now, always return false since DB is not connected
+    return false
+  } catch (error) {
+    return false
+  }
 }
 
-// Transaction wrapper (stub for deployment)
+// Transaction wrapper
 export async function withTransaction<T>(
-  fn: (tx: any) => Promise<T>
+  fn: (tx: PrismaClient) => Promise<T>
 ): Promise<T> {
+  // For now, just run the function with the main client
+  // Real transactions will work once DB is connected
   return await fn(prisma)
 }
 
-// Utility functions for common operations (stub for deployment)
+// Utility functions for common operations
 export const db = {
   user: {
-    findByEmail: async () => null,
-    create: async () => ({ id: 'mock-id' }),
+    findByEmail: async (email: string) => {
+      return null // Disabled for deployment
+    },
+    create: async (data: any) => {
+      return { id: 'mock-id', ...data } // Mock response
+    },
   },
   recipe: {
-    findPublished: async () => [],
-    findBySlug: async () => null,
-    findFeatured: async () => [],
-    count: async () => 0,
+    findPublished: async () => {
+      return [] // Empty array for deployment
+    },
+    findBySlug: async (slug: string) => {
+      return null // Not found for deployment
+    },
+    findFeatured: async () => {
+      return [] // Empty array for deployment
+    },
+    count: async () => {
+      return 0 // Zero count for deployment
+    },
   },
   blogPost: {
-    findPublished: async () => [],
-    findBySlug: async () => null,
-    findFeatured: async () => [],
-    incrementViews: async () => ({ id: 'mock-id' }),
-    count: async () => 0,
+    findPublished: async () => {
+      return [] // Empty array for deployment
+    },
+    findBySlug: async (slug: string) => {
+      return null // Not found for deployment
+    },
+    findFeatured: async () => {
+      return [] // Empty array for deployment
+    },
+    incrementViews: async (id: string) => {
+      return { id, views: 0 } // Mock response
+    },
+    count: async () => {
+      return 0 // Zero count for deployment
+    },
   },
   tag: {
-    findAll: async () => [],
-    findPopular: async () => [],
-    findOrCreate: async () => ({ id: 'mock-id' }),
+    findAll: async () => {
+      return [] // Empty array for deployment
+    },
+    findPopular: async (limit: number = 10) => {
+      return [] // Empty array for deployment
+    },
+    findOrCreate: async (name: string) => {
+      return { id: 'mock-id', name, slug: name.toLowerCase() } // Mock response
+    },
   },
   analytics: {
-    track: async () => ({ id: 'mock-id' }),
-    getPageViews: async () => 0,
-    getPopularPages: async () => [],
+    track: async (event: any) => {
+      return { id: 'mock-id', ...event } // Mock response
+    },
+    getPageViews: async (path: string) => {
+      return 0 // Zero views for deployment
+    },
+    getPopularPages: async (limit: number = 10) => {
+      return [] // Empty array for deployment
+    },
   },
 }
 

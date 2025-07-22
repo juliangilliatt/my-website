@@ -1,174 +1,255 @@
 'use server'
 
-// Simplified recipes actions for deployment (stub implementation)
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
-import type { Recipe, SearchQuery } from '@/types'
+import { prisma } from '@/lib/prisma'
+import type { Prisma } from '@prisma/client'
+
+// Form validation schemas
+const createRecipeSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  ingredients: z.array(z.any()).min(1, 'At least one ingredient is required'),
+  instructions: z.array(z.any()).min(1, 'At least one instruction is required'),
+  prepTime: z.number().min(0),
+  cookTime: z.number().min(0),
+  totalTime: z.number().min(0),
+  servings: z.number().min(1),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  category: z.string().min(1),
+  cuisine: z.string().min(1),
+  published: z.boolean().default(false),
+  featured: z.boolean().default(false),
+})
+
+const updateRecipeSchema = createRecipeSchema.partial()
 
 // Mock auth function for deployment
 function auth() {
   return { userId: 'mock-user-id' }
 }
 
-// Mock recipe data
-const mockRecipe: Recipe = {
-  id: 'mock-recipe-id',
-  title: 'Sample Recipe',
-  slug: 'sample-recipe',
-  description: 'A sample recipe for deployment testing.',
-  ingredients: ['1 cup flour', '2 eggs', '1 cup milk'],
-  instructions: ['Mix ingredients', 'Cook for 20 minutes'],
-  prepTime: 15,
-  cookTime: 20,
-  totalTime: 35,
-  servings: 4,
-  difficulty: 'Easy',
-  category: 'Main Course',
-  cuisine: 'International',
-  images: [],
-  nutrition: null,
-  notes: null,
-  source: null,
-  featured: false,
-  published: true,
-  views: 0,
-  rating: 0,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  authorId: 'mock-user-id',
-  tagIds: [],
-  author: {
-    id: 'mock-user-id',
-    name: 'Mock User',
-    avatar: null,
-  },
-  tags: [],
-}
-
-export async function getRecipes(params: SearchQuery = {}) {
-  // Return empty array for deployment
-  return {
-    recipes: [],
-    pagination: {
-      page: 1,
-      limit: 12,
-      total: 0,
-      totalPages: 0,
-      hasNext: false,
-      hasPrev: false,
-    },
-  }
-}
-
-export async function getRecipeBySlug(slug: string) {
-  // Return mock recipe for deployment
-  return mockRecipe
-}
-
-export async function getFeaturedRecipes(limit = 6) {
-  return []
-}
-
-export async function getRelatedRecipes(recipeId: string, limit = 4) {
-  return []
-}
-
-export async function createRecipe(data: any) {
+// Create a new recipe
+export async function createRecipe(formData: FormData) {
   try {
-    const { userId } = auth()
-    if (!userId) {
+    const session = auth()
+    if (!session?.userId) {
       throw new Error('Unauthorized')
     }
 
-    // Mock recipe creation for deployment
+    // Parse and validate form data
+    const validatedFields = createRecipeSchema.parse({
+      title: formData.get('title'),
+      description: formData.get('description'),
+      ingredients: JSON.parse(formData.get('ingredients') as string || '[]'),
+      instructions: JSON.parse(formData.get('instructions') as string || '[]'),
+      prepTime: Number(formData.get('prepTime')),
+      cookTime: Number(formData.get('cookTime')),
+      totalTime: Number(formData.get('totalTime')),
+      servings: Number(formData.get('servings')),
+      difficulty: formData.get('difficulty'),
+      category: formData.get('category'),
+      cuisine: formData.get('cuisine'),
+      published: formData.get('published') === 'true',
+      featured: formData.get('featured') === 'true',
+    })
+
+    // For deployment, just return success without DB write
+    const mockRecipe = {
+      id: 'mock-recipe-id',
+      slug: validatedFields.title.toLowerCase().replace(/\s+/g, '-'),
+      ...validatedFields,
+    }
+
     revalidatePath('/recipes')
     revalidatePath('/admin/recipes')
-
-    return mockRecipe
+    
+    return { success: true, data: mockRecipe }
   } catch (error) {
-    console.error('Error creating recipe:', error)
-    throw new Error('Failed to create recipe')
+    return { success: false, error: 'Failed to create recipe' }
   }
 }
 
-export async function updateRecipe(id: string, data: any) {
+// Update an existing recipe
+export async function updateRecipe(id: string, formData: FormData) {
   try {
-    const { userId } = auth()
-    if (!userId) {
+    const session = auth()
+    if (!session?.userId) {
       throw new Error('Unauthorized')
     }
 
-    // Mock recipe update for deployment
-    revalidatePath('/recipes')
-    revalidatePath(`/recipes/${mockRecipe.slug}`)
-    revalidatePath('/admin/recipes')
+    // Parse and validate form data
+    const validatedFields = updateRecipeSchema.parse({
+      title: formData.get('title'),
+      description: formData.get('description'),
+      ingredients: JSON.parse(formData.get('ingredients') as string || '[]'),
+      instructions: JSON.parse(formData.get('instructions') as string || '[]'),
+      prepTime: Number(formData.get('prepTime')),
+      cookTime: Number(formData.get('cookTime')),
+      totalTime: Number(formData.get('totalTime')),
+      servings: Number(formData.get('servings')),
+      difficulty: formData.get('difficulty'),
+      category: formData.get('category'),
+      cuisine: formData.get('cuisine'),
+      published: formData.get('published') === 'true',
+      featured: formData.get('featured') === 'true',
+    })
 
-    return mockRecipe
+    // For deployment, just return success without DB write
+    const mockRecipe = {
+      id,
+      ...validatedFields,
+    }
+
+    revalidatePath('/recipes')
+    revalidatePath(`/recipes/${id}`)
+    revalidatePath('/admin/recipes')
+    
+    return { success: true, data: mockRecipe }
   } catch (error) {
-    console.error('Error updating recipe:', error)
-    throw new Error('Failed to update recipe')
+    return { success: false, error: 'Failed to update recipe' }
   }
 }
 
+// Delete a recipe
 export async function deleteRecipe(id: string) {
   try {
-    const { userId } = auth()
-    if (!userId) {
+    const session = auth()
+    if (!session?.userId) {
       throw new Error('Unauthorized')
     }
 
-    // Mock recipe deletion for deployment
+    // For deployment, just return success without DB delete
     revalidatePath('/recipes')
     revalidatePath('/admin/recipes')
-
+    
     return { success: true }
   } catch (error) {
-    console.error('Error deleting recipe:', error)
-    throw new Error('Failed to delete recipe')
+    return { success: false, error: 'Failed to delete recipe' }
   }
 }
 
-export async function toggleRecipeFeatured(id: string) {
+// Get all recipes with optional filters
+export async function getRecipes(params?: {
+  search?: string
+  category?: string
+  cuisine?: string
+  difficulty?: string
+  featured?: boolean
+  published?: boolean
+  authorId?: string
+  page?: number
+  limit?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+}) {
   try {
-    const { userId } = auth()
-    if (!userId) {
-      throw new Error('Unauthorized')
+    // For deployment, return empty array
+    return {
+      recipes: [],
+      total: 0,
+      page: params?.page || 1,
+      totalPages: 0,
     }
-
-    // Mock toggle for deployment
-    revalidatePath('/recipes')
-    revalidatePath('/admin/recipes')
-
-    return mockRecipe
   } catch (error) {
-    console.error('Error toggling recipe featured:', error)
-    throw new Error('Failed to toggle recipe featured status')
+    console.error('Failed to fetch recipes:', error)
+    return {
+      recipes: [],
+      total: 0,
+      page: 1,
+      totalPages: 0,
+    }
   }
 }
 
-export async function toggleRecipePublished(id: string) {
+// Get a single recipe by ID
+export async function getRecipeById(id: string) {
   try {
-    const { userId } = auth()
-    if (!userId) {
-      throw new Error('Unauthorized')
-    }
-
-    // Mock toggle for deployment
-    revalidatePath('/recipes')
-    revalidatePath('/admin/recipes')
-
-    return mockRecipe
+    // For deployment, return null
+    return null
   } catch (error) {
-    console.error('Error toggling recipe published:', error)
-    throw new Error('Failed to toggle recipe published status')
+    console.error('Failed to fetch recipe:', error)
+    return null
   }
 }
 
-export async function getRecipeCategories() {
-  return []
+// Get a single recipe by slug
+export async function getRecipeBySlug(slug: string) {
+  try {
+    // For deployment, return null
+    return null
+  } catch (error) {
+    console.error('Failed to fetch recipe:', error)
+    return null
+  }
 }
 
-export async function getRecipeCuisines() {
-  return []
+// Get featured recipes
+export async function getFeaturedRecipes(limit: number = 6) {
+  try {
+    // For deployment, return empty array
+    return []
+  } catch (error) {
+    console.error('Failed to fetch featured recipes:', error)
+    return []
+  }
+}
+
+// Get related recipes
+export async function getRelatedRecipes(recipeId: string, limit: number = 4) {
+  try {
+    // For deployment, return empty array
+    return []
+  } catch (error) {
+    console.error('Failed to fetch related recipes:', error)
+    return []
+  }
+}
+
+// Update recipe rating
+export async function updateRecipeRating(recipeId: string, rating: number) {
+  try {
+    // For deployment, just return success
+    revalidatePath(`/recipes/${recipeId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: 'Failed to update rating' }
+  }
+}
+
+// Increment recipe views
+export async function incrementRecipeViews(recipeId: string) {
+  try {
+    // For deployment, just return success
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to increment views:', error)
+    return { success: false }
+  }
+}
+
+// Get recipe statistics
+export async function getRecipeStats() {
+  try {
+    // For deployment, return mock stats
+    return {
+      total: 0,
+      published: 0,
+      featured: 0,
+      categories: [],
+      topRated: [],
+      mostViewed: [],
+    }
+  } catch (error) {
+    console.error('Failed to fetch recipe stats:', error)
+    return {
+      total: 0,
+      published: 0,
+      featured: 0,
+      categories: [],
+      topRated: [],
+      mostViewed: [],
+    }
+  }
 }
