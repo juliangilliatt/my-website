@@ -1,4 +1,4 @@
-import { auth as clerkAuth, currentUser as clerkCurrentUser } from '@clerk/nextjs'
+import { auth as clerkAuth, currentUser as clerkCurrentUser } from '@clerk/nextjs/server'
 import { useAuth as useClerkAuth, useUser as useClerkUser, useSession as useClerkSession } from '@clerk/nextjs'
 import type { User } from '@clerk/nextjs/server'
 
