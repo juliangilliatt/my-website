@@ -1,13 +1,25 @@
 'use client'
 
-// Simplified admin auth hook for deployment (stub implementation)
 import { useState, useEffect } from 'react'
-import { 
-  AdminRole, 
-  Permission, 
-  AdminRoleUtils,
-  ADMIN_ROLES
-} from '@/lib/auth/admin-guards'
+import { useUser } from '@clerk/nextjs'
+
+// Simplified types for single-admin setup
+export type AdminRole = 'ADMIN'
+export type Permission = 
+  | 'admin:access'
+  | 'recipes:create' 
+  | 'recipes:read' 
+  | 'recipes:update' 
+  | 'recipes:delete'
+  | 'blog:create'
+  | 'blog:read'
+  | 'blog:update'
+  | 'blog:delete'
+  | 'users:read'
+  | 'analytics:read'
+  | 'content:create'
+  | 'content:delete'
+  | 'settings:update'
 
 export interface AdminAuthState {
   isLoading: boolean
@@ -21,32 +33,69 @@ export interface AdminAuthState {
   error: string | null
 }
 
-// Mock user for deployment
-const mockUser = {
-  id: 'mock-user-id',
-  name: 'Mock User',
-  email: 'mock@example.com',
-}
+// All permissions for single admin setup
+const ALL_PERMISSIONS: Permission[] = [
+  'admin:access',
+  'recipes:create',
+  'recipes:read', 
+  'recipes:update',
+  'recipes:delete',
+  'blog:create',
+  'blog:read',
+  'blog:update',
+  'blog:delete',
+  'users:read',
+  'analytics:read',
+  'content:create',
+  'content:delete',
+  'settings:update'
+]
 
 export function useAdminAuth() {
+  const { user, isLoaded } = useUser()
+  
   const [authState, setAuthState] = useState<AdminAuthState>({
     isLoading: true,
-    isAdmin: true, // Allow admin access for deployment
-    userId: 'mock-user-id',
-    role: ADMIN_ROLES.ADMIN,
-    permissions: ['admin:access', 'recipes:create', 'recipes:read', 'recipes:update', 'recipes:delete', 'blog:create', 'blog:read', 'blog:update', 'blog:delete', 'users:read', 'analytics:read', 'content:create', 'content:delete'] as Permission[],
-    hierarchy: 3,
-    canManageUsers: true,
-    canManageSettings: true,
+    isAdmin: false,
+    userId: null,
+    role: null,
+    permissions: [],
+    hierarchy: 0,
+    canManageUsers: false,
+    canManageSettings: false,
     error: null,
   })
 
   useEffect(() => {
-    // Mock loading for deployment
-    setTimeout(() => {
-      setAuthState(prev => ({ ...prev, isLoading: false }))
-    }, 100)
-  }, [])
+    if (isLoaded) {
+      if (user) {
+        // For single-admin setup, any authenticated user is admin
+        setAuthState({
+          isLoading: false,
+          isAdmin: true,
+          userId: user.id,
+          role: 'ADMIN',
+          permissions: ALL_PERMISSIONS,
+          hierarchy: 3,
+          canManageUsers: true,
+          canManageSettings: true,
+          error: null,
+        })
+      } else {
+        setAuthState({
+          isLoading: false,
+          isAdmin: false,
+          userId: null,
+          role: null,
+          permissions: [],
+          hierarchy: 0,
+          canManageUsers: false,
+          canManageSettings: false,
+          error: null,
+        })
+      }
+    }
+  }, [user, isLoaded])
 
   // Check if user has specific permission
   const checkPermission = (permission: Permission): boolean => {
@@ -55,22 +104,22 @@ export function useAdminAuth() {
 
   // Check if user can manage another user by role
   const canManageRole = (targetRole: AdminRole): boolean => {
-    return true // Allow for deployment
+    return authState.isAdmin
   }
 
   // Get formatted role name
   const getRoleDisplayName = (): string => {
-    return authState.role ? AdminRoleUtils.getRoleDisplayName(authState.role) : 'No Role'
+    return authState.role ? 'Admin' : 'No Role'
   }
 
   // Get role description
   const getRoleDescription = (): string => {
-    return authState.role ? AdminRoleUtils.getRoleDescription(authState.role) : 'No admin access'
+    return authState.role ? 'Full administrative access' : 'No admin access'
   }
 
   // Get role color for UI
   const getRoleColor = (): string => {
-    return authState.role ? AdminRoleUtils.getRoleColor(authState.role) : 'bg-gray-500 text-white'
+    return authState.role ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'
   }
 
   return {
@@ -88,9 +137,9 @@ export function usePermission(permission: Permission) {
   const { checkPermission, isLoading, isAdmin } = useAdminAuth()
   
   return {
-    hasPermission: true, // Allow for deployment
-    isLoading: false,
-    isAdmin: true,
+    hasPermission: checkPermission(permission),
+    isLoading,
+    isAdmin,
   }
 }
 
@@ -99,20 +148,22 @@ export function useAdminGuard() {
   const { isLoading, isAdmin, error } = useAdminAuth()
   
   return {
-    isLoading: false,
-    isAdmin: true,
-    error: null,
-    canAccess: true,
+    isLoading,
+    isAdmin,
+    error,
+    canAccess: isAdmin,
   }
 }
 
 // Hook for permission-based route protection
 export function usePermissionGuard(permission: Permission) {
+  const { checkPermission, isLoading, isAdmin, error } = useAdminAuth()
+  
   return {
-    isLoading: false,
-    hasPermission: true,
-    error: null,
-    canAccess: true,
+    isLoading,
+    hasPermission: checkPermission(permission),
+    error,
+    canAccess: checkPermission(permission),
   }
 }
 
