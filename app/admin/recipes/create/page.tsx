@@ -1,9 +1,12 @@
 import { Metadata } from 'next'
-import { requirePermission } from '@/lib/auth/admin-guards'
+import { redirect } from 'next/navigation'
 import { AdminBreadcrumb } from '@/components/admin/AdminNav'
 import { RecipeForm } from '@/components/admin/RecipeForm'
 import { SITE_CONFIG } from '@/lib/constants'
 import { RecipeFormData } from '@/lib/validations/admin-forms'
+import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { recipeSchema } from '@/lib/validations/recipe'
 
 export const metadata: Metadata = {
   title: `Create Recipe - Admin - ${SITE_CONFIG.name}`,
@@ -12,26 +15,50 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateRecipePage() {
-  // Verify admin access with recipe create permission
-  await requirePermission('recipes:create')
+  // Auth check is handled in layout
+  const session = await auth()
+  const user = session?.user
 
   // Handle form submission
   const handleSubmit = async (data: RecipeFormData) => {
     'use server'
     
     try {
-      // In a real app, this would save to database
-      console.log('Creating recipe:', data)
-      
-      // Mock API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Simulate success
-      return {
-        success: true,
-        message: 'Recipe created successfully',
-        recipeId: 'mock-recipe-id'
+      // Get current user
+      const session = await auth()
+      if (!session?.user?.id) {
+        throw new Error('Authentication required')
       }
+
+      // Validate the recipe data
+      const validatedData = recipeSchema.parse({
+        ...data,
+        totalTime: data.prepTime + data.cookTime,
+      })
+
+      // Create recipe in database
+      const recipe = await prisma.recipe.create({
+        data: {
+          ...validatedData,
+          authorId: session.user.id,
+          slug: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
+          ingredients: data.ingredients.map((ingredient, index) => ({
+            id: index,
+            name: ingredient,
+            amount: 1,
+            unit: 'unit',
+          })),
+          instructions: data.instructions.map((instruction, index) => ({
+            step: index + 1,
+            description: instruction,
+          })),
+          images: [],
+          nutrition: null,
+        },
+      })
+
+      // Redirect to recipe edit page
+      redirect(`/admin/recipes/${recipe.id}/edit?success=created`)
     } catch (error) {
       console.error('Error creating recipe:', error)
       throw new Error('Failed to create recipe')
@@ -71,7 +98,7 @@ export default async function CreateRecipePage() {
           tags: [],
           published: false,
           featured: false,
-          author: 'Admin User', // In real app, get from auth context
+          author: user?.name || 'Admin User'
         }}
       />
     </div>

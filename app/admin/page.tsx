@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { requireAdmin } from '@/lib/auth/admin-guards'
+import { auth } from '@/lib/auth'
 import { AdminBreadcrumb } from '@/components/admin/AdminNav'
 import { StatsCards, DetailedStatsCards, RecentActivityStats } from '@/components/admin/StatsCards'
 import { QuickActions, RecentTasks, SystemActions } from '@/components/admin/QuickActions'
@@ -14,8 +14,9 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminDashboard() {
-  // Verify admin access
-  const adminData = await requireAdmin()
+  // Get authenticated user (auth check is in layout)
+  const session = await auth()
+  const user = session?.user
 
   return (
     <div className="space-y-8">
@@ -24,7 +25,7 @@ export default async function AdminDashboard() {
         <div>
           <h1 className="text-3xl font-mono font-bold text-black">Dashboard</h1>
           <p className="text-neutral-600 font-mono">
-            Welcome back, {adminData.role.replace('_', ' ')}
+            Welcome back, {user?.name || 'Admin'}
           </p>
         </div>
         <AdminBreadcrumb items={[{ name: 'Dashboard' }]} />

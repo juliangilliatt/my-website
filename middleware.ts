@@ -1,11 +1,13 @@
-// Simplified middleware for deployment (no auth)
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-export function middleware(request: NextRequest) {
-  // Allow all requests for now - auth disabled for deployment
-  return NextResponse.next()
-}
+const isAdminRoute = createRouteMatcher(['/admin(.*)'])
+
+export default clerkMiddleware((auth, req) => {
+  // Protect admin routes
+  if (isAdminRoute(req)) {
+    auth().protect()
+  }
+})
 
 export const config = {
   matcher: [

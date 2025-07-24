@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { requireAdmin } from '@/lib/auth/admin-guards'
+import { auth } from '@/lib/auth'
 import { AdminNav } from '@/components/admin/AdminNav'
 import { SITE_CONFIG } from '@/lib/constants'
 
@@ -15,12 +15,15 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Server-side admin authentication check (stub for deployment)
-  try {
-    await requireAdmin()
-  } catch (error) {
-    // Allow access for deployment
+  // Check if user is authenticated
+  const session = await auth()
+  
+  if (!session?.user) {
+    redirect('/sign-in')
   }
+
+  // For single-admin setup, any authenticated user is admin
+  // In a multi-user setup, you'd check for admin role here
 
   return (
     <div className="min-h-screen bg-neutral-50">

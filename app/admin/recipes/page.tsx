@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { requirePermission } from '@/lib/auth/admin-guards'
 import { AdminBreadcrumb } from '@/components/admin/AdminNav'
 import { RecipeTable } from '@/components/admin/RecipeTable'
 import { Button } from '@/components/ui/Button'
@@ -25,8 +24,7 @@ interface RecipeManagementPageProps {
 }
 
 export default async function RecipeManagementPage({ searchParams }: RecipeManagementPageProps) {
-  // Verify admin access with recipe read permission
-  await requirePermission('recipes:read')
+  // Auth check is handled in layout
 
   const { q: searchQuery, category, status = 'all', page = '1' } = searchParams
   const currentPage = parseInt(page)
