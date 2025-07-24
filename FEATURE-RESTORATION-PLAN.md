@@ -30,7 +30,8 @@ The website was stripped back from a full-featured recipe and blog platform to a
 - [x] Phase 2: Database Infrastructure ✅
 - [x] Phase 3: Authentication Foundation ✅
 - [x] Phase 4: Content Management System ✅
-- [x] Phase 5: File Upload System ✅  
+- [x] Phase 5: File Upload System ✅
+- [x] Phase 5.5: External Service Account Setup ✅  
 - [ ] Phase 3: Authentication Foundation
 - [ ] Phase 4: Content Management System
 - [ ] Phase 5: File Upload System

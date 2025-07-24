@@ -27,7 +27,8 @@
     "db:studio": "prisma studio",
     "deploy": "bash scripts/deploy.sh",
     "deploy:preview": "bash scripts/preview-deploy.sh",
-    "deploy:monitor": "bash scripts/monitor-deployment.sh"
+    "deploy:monitor": "bash scripts/monitor-deployment.sh",
+    "test:services": "node scripts/test-services.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.0.0",
