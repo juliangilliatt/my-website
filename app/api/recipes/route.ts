@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@/lib/auth'
+import { auth } from '@clerk/nextjs/server'
 import { recipeSchema } from '@/lib/validations/recipe'
 import { z } from 'zod'
+
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic'
 
 // GET /api/recipes - Get recipes with filtering and pagination
 export async function GET(request: NextRequest) {
@@ -157,8 +160,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await auth()
-    if (!session?.user) {
+    const { userId } = auth()
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -175,7 +178,7 @@ export async function POST(request: NextRequest) {
     const recipe = await prisma.recipe.create({
       data: {
         ...validatedData,
-        authorId: session.user.id,
+        authorId: userId,
         ingredients: {
           create: validatedData.ingredients,
         },
