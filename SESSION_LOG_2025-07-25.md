@@ -132,6 +132,24 @@ Then update `/api/upload/route.ts` to extract actual dimensions.
 3. **404 on chunks**: Normal in dev mode, ignore
 4. **Upload progress at 0%**: Added simulated progress
 
+### Active Build Error - Needs Fix
+```
+> Build error occurred
+Error: Failed to collect page data for /api/recipes
+    at /vercel/path0/node_modules/next/dist/build/utils.js:1269:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  type: 'Error'
+}
+Error: Command "npm run build" exited with 1
+```
+
+**Issue**: The `/api/recipes` route is likely trying to use server-only code (like database connections) during static build time.
+
+**Solution**: Check `/app/api/recipes/route.ts` and ensure:
+1. Remove any top-level database calls
+2. Move all logic inside the route handlers (GET, POST, etc.)
+3. Or convert the route to use dynamic rendering with `export const dynamic = 'force-dynamic'`
+
 ### Git Status
 - Branch: `main`
 - Last commit: "Remove test pages before deployment"
