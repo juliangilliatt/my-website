@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { auth } from '@clerk/nextjs/server'
 import { AdminNav } from '@/components/admin/AdminNav'
 import { SITE_CONFIG } from '@/lib/constants'
 
@@ -16,10 +16,10 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   // Check if user is authenticated
-  const session = await auth()
+  const { userId } = auth()
   
-  if (!session?.user) {
-    redirect('/sign-in')
+  if (!userId) {
+    redirect('/auth/sign-in')
   }
 
   // For single-admin setup, any authenticated user is admin

@@ -272,39 +272,34 @@ export async function uploadImageToServer(
   file: File,
   options: ImageUploadOptions = {}
 ): Promise<ImageUploadResult> {
-  const processed = await processImageFile(file, options)
+
+  // Create form data
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('alt', '')
+  formData.append('caption', '')
   
-  // Mock upload - in real implementation, this would upload to your storage service
-  const mockUpload = async (blob: Blob, suffix: string = '') => {
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Generate mock URL
-    const timestamp = Date.now()
-    const randomId = Math.random().toString(36).substring(2, 15)
-    const extension = file.type.split('/')[1]
-    const filename = `${timestamp}-${randomId}${suffix}.${extension}`
-    
-    return {
-      url: `/uploads/${filename}`,
-      filename,
-    }
+  // Upload to server
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  })
+  
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Upload failed')
   }
   
-  // Upload processed files
-  const originalUpload = await mockUpload(processed.original)
-  const thumbnailUpload = processed.thumbnail 
-    ? await mockUpload(processed.thumbnail, '-thumb')
-    : undefined
+  const result = await response.json()
   
   return {
-    url: originalUpload.url,
-    thumbnailUrl: thumbnailUpload?.url,
-    width: processed.dimensions.width,
-    height: processed.dimensions.height,
-    size: file.size,
-    type: file.type,
-    filename: originalUpload.filename,
+    url: result.file.url,
+    thumbnailUrl: result.file.thumbnailUrl,
+    width: result.file.width || 0,
+    height: result.file.height || 0,
+    size: result.file.size,
+    type: result.file.type,
+    filename: result.file.filename,
   }
 }
 

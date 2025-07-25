@@ -112,6 +112,14 @@ export function ImageUpload({
       const preview = createImagePreviewUrl(file)
       setPreviewUrl(preview)
 
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev
+          return prev + 10
+        })
+      }, 200)
+
       // Process and upload image
       const result = await uploadImageToServer(file, {
         maxSize,
@@ -119,6 +127,7 @@ export function ImageUpload({
         ...options,
       })
 
+      clearInterval(progressInterval)
       setImageData(result)
       setPreviewUrl(result.url)
       setUploadProgress(100)
@@ -188,8 +197,9 @@ export function ImageUpload({
   }, [onChange, onImageData])
 
   const handleBrowseClick = useCallback(() => {
-    if (!disabled) {
-      fileInputRef.current?.click()
+    console.log('Browse clicked, disabled:', disabled, 'fileInputRef:', fileInputRef.current)
+    if (!disabled && fileInputRef.current) {
+      fileInputRef.current.click()
     }
   }, [disabled])
 

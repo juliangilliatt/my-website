@@ -4,7 +4,7 @@ import { AdminBreadcrumb } from '@/components/admin/AdminNav'
 import { RecipeForm } from '@/components/admin/RecipeForm'
 import { SITE_CONFIG } from '@/lib/constants'
 import { RecipeFormData } from '@/lib/validations/admin-forms'
-import { auth } from '@/lib/auth'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { recipeSchema } from '@/lib/validations/recipe'
 
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 
 export default async function CreateRecipePage() {
   // Auth check is handled in layout
-  const session = await auth()
-  const user = session?.user
+  const { userId } = auth()
+  const user = userId ? { id: userId } : null
 
   // Handle form submission
   const handleSubmit = async (data: RecipeFormData) => {
@@ -25,8 +25,8 @@ export default async function CreateRecipePage() {
     
     try {
       // Get current user
-      const session = await auth()
-      if (!session?.user?.id) {
+      const { userId } = auth()
+      if (!userId) {
         throw new Error('Authentication required')
       }
 
@@ -40,7 +40,7 @@ export default async function CreateRecipePage() {
       const recipe = await prisma.recipe.create({
         data: {
           ...validatedData,
-          authorId: session.user.id,
+          authorId: userId,
           slug: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
           ingredients: data.ingredients.map((ingredient, index) => ({
             id: index,

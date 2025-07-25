@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { auth } from '@clerk/nextjs/server'
 import { ratelimit } from '@/lib/ratelimit'
+import { put, del } from '@vercel/blob'
 
 // Feature flag for file uploads (disabled for deployment)
 const ENABLE_FILE_UPLOADS = process.env.ENABLE_FILE_UPLOADS === 'true'
@@ -29,8 +30,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check authentication
-    const session = await auth()
-    if (!session?.userId) {
+    const { userId } = auth()
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
           width: 800,
           height: 600,
           uploadedAt: new Date().toISOString(),
-          uploadedById: session.userId,
+          uploadedById: userId,
         },
       }, { status: 201 })
     }
@@ -94,37 +95,52 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop()
     const filename = `${timestamp}-${randomString}.${extension}`
 
-    // Upload to Vercel Blob (would be implemented here)
-    // const blob = await put(filename, file, {
-    //   access: 'public',
-    //   token: process.env.BLOB_READ_WRITE_TOKEN,
-    // })
+    // Upload to Vercel Blob
+    let fileUrl: string
+    let dimensions = { width: 0, height: 0 }
+    
+    if (process.env.BLOB_READ_WRITE_TOKEN && process.env.BLOB_READ_WRITE_TOKEN !== 'vercel_blob_rw_placeholder') {
+      // Use Vercel Blob storage
+      const blob = await put(filename, file, {
+        access: 'public',
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      })
+      fileUrl = blob.url
+      
+      // Try to get dimensions from blob metadata if available
+      // For now, we'll set default dimensions
+      // In production, you'd use a library like sharp or probe-image-size
+      dimensions = { width: 800, height: 600 }
+    } else {
+      // Fallback to mock URL when Blob storage isn't configured
+      console.warn('Vercel Blob storage not configured. Using mock URL.')
+      fileUrl = `/uploads/${filename}`
+    }
 
-    // Mock response for when uploads are enabled but Vercel Blob isn't configured
-    const mockFile = {
+    const uploadedFile = {
       id: `file-${timestamp}`,
-      url: `/uploads/${filename}`,
+      url: fileUrl,
       filename,
       originalName: file.name,
       size: file.size,
       type: file.type,
       alt,
       caption,
-      width: null, // Would be extracted from image metadata
-      height: null, // Would be extracted from image metadata
+      width: dimensions.width,
+      height: dimensions.height,
       uploadedAt: new Date().toISOString(),
-      uploadedById: session.userId,
+      uploadedById: userId,
     }
 
     // Save file metadata to database (when enabled)
     // await prisma.image.create({
-    //   data: mockFile
+    //   data: uploadedFile
     // })
 
     return NextResponse.json({
       success: true,
       message: 'File uploaded successfully',
-      file: mockFile,
+      file: uploadedFile,
     }, { status: 201 })
 
   } catch (error) {
@@ -189,8 +205,8 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Check authentication
-    const session = await auth()
-    if (!session?.userId) {
+    const { userId } = auth()
+    if (!userId) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -215,10 +231,17 @@ export async function DELETE(request: NextRequest) {
       })
     }
 
-    // Delete from Vercel Blob (would be implemented here)
-    // await del(fileUrl, {
-    //   token: process.env.BLOB_READ_WRITE_TOKEN,
-    // })
+    // Delete from Vercel Blob
+    if (process.env.BLOB_READ_WRITE_TOKEN && process.env.BLOB_READ_WRITE_TOKEN !== 'vercel_blob_rw_placeholder') {
+      // Get file URL from database or construct it
+      // For now, we'll need to pass the URL as a parameter
+      const fileUrl = searchParams.get('url')
+      if (fileUrl) {
+        await del(fileUrl, {
+          token: process.env.BLOB_READ_WRITE_TOKEN,
+        })
+      }
+    }
 
     // Delete from database (when enabled)
     // await prisma.image.delete({

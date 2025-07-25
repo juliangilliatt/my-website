@@ -5,6 +5,11 @@ import { useUser } from '@clerk/nextjs'
 
 // Simplified types for single-admin setup
 export type AdminRole = 'ADMIN'
+
+// Admin roles constant
+export const ADMIN_ROLES = {
+  ADMIN: 'ADMIN' as AdminRole
+}
 export type Permission = 
   | 'admin:access'
   | 'recipes:create' 
