@@ -36,7 +36,7 @@ export default function HomePage() {
           <div className="space-y-4">
             <p className="font-mono text-sm text-neutral-500">Connect with me:</p>
             <div className="flex justify-center gap-4">
-              <a 
+              <a
                 href={`https://github.com/${SITE_CONFIG.social.github}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -44,15 +44,7 @@ export default function HomePage() {
               >
                 GitHub
               </a>
-              <a 
-                href={`https://twitter.com/${SITE_CONFIG.social.twitter.replace('@', '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
-              >
-                Twitter
-              </a>
-              <a 
+              <a
                 href={`mailto:${SITE_CONFIG.social.email}`}
                 className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
               >
