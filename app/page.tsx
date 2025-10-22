@@ -25,6 +25,12 @@ export default function HomePage() {
             >
               View Recipes
             </a>
+            <a
+              href="/admin"
+              className="px-6 py-3 bg-white text-black border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-medium uppercase tracking-wide transition-all duration-150"
+            >
+              Admin
+            </a>
           </div>
           
           <div className="space-y-4">
