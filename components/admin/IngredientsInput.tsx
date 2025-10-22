@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { FormField, FormInput, FormSelect } from './FormValidation'
 import { useArrayField } from '@/hooks/useFormValidation'
@@ -54,7 +54,7 @@ export function IngredientsInput({
   } = useArrayField<string>(value, {})
 
   // Update parent when ingredients change
-  React.useEffect(() => {
+  useEffect(() => {
     onChange(ingredients)
   }, [ingredients, onChange])
 
@@ -297,7 +297,7 @@ function StructuredIngredientInput({
   const [notes, setNotes] = useState('')
 
   // Parse existing value into structured format
-  React.useEffect(() => {
+  useEffect(() => {
     if (value) {
       const parsed = parseIngredientString(value)
       setAmount(parsed.amount)
@@ -308,7 +308,7 @@ function StructuredIngredientInput({
   }, [value])
 
   // Update parent when structured values change
-  React.useEffect(() => {
+  useEffect(() => {
     const formatted = formatIngredientString({ amount, unit, item, notes })
     if (formatted !== value) {
       onChange(formatted)

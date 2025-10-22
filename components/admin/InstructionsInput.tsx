@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { FormField, FormTextarea, CharacterCounter } from './FormValidation'
 import { useArrayField } from '@/hooks/useFormValidation'
@@ -45,7 +45,7 @@ export function InstructionsInput({
   } = useArrayField<string>(value, {})
 
   // Update parent when instructions change
-  React.useEffect(() => {
+  useEffect(() => {
     onChange(instructions)
   }, [instructions, onChange])
 
