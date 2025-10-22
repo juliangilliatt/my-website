@@ -133,15 +133,24 @@ export function RecipeForm({
     }
   }, [onSubmit, router])
 
-  // Handle save draft
+  // Handle save draft - bypass validation for drafts
   const handleSaveDraft = useCallback(async () => {
     const draftData = { ...values, published: false }
     try {
-      await handleFormSubmit(draftData)
+      if (onSubmit) {
+        await onSubmit(draftData)
+        setSubmitSuccess(true)
+
+        // Redirect after success
+        setTimeout(() => {
+          router.push('/admin/recipes')
+        }, 2000)
+      }
     } catch (error) {
       console.error('Save draft error:', error)
+      alert('Error saving draft: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
-  }, [values, handleFormSubmit])
+  }, [values, onSubmit, router])
 
   // Handle publish
   const handlePublish = useCallback(async () => {

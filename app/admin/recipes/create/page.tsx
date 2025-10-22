@@ -30,42 +30,53 @@ export default async function CreateRecipePage() {
         throw new Error('Authentication required')
       }
 
-      // Generate slug from title
-      const slug = data.title
+      // Generate slug from title (with fallback for drafts)
+      const title = data.title || 'Untitled Recipe'
+      const slug = title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
+        || `recipe-${Date.now()}`
 
       // Transform form data to match Prisma schema
+      // Allow minimal data for drafts
       const recipeData = {
-        title: data.title,
+        title: title,
         slug: slug,
-        description: data.description,
-        prepTime: data.prepTime,
-        cookTime: data.cookTime,
-        totalTime: data.prepTime + data.cookTime,
-        servings: data.servings,
-        difficulty: data.difficulty,
-        category: data.category,
+        description: data.description || '',
+        prepTime: data.prepTime || 0,
+        cookTime: data.cookTime || 0,
+        totalTime: (data.prepTime || 0) + (data.cookTime || 0),
+        servings: data.servings || 1,
+        difficulty: data.difficulty || 'easy',
+        category: data.category || 'main-course',
         cuisine: data.cuisine || '',
         notes: data.notes || '',
         source: data.source || '',
         featured: data.featured || false,
         published: data.published || false,
         authorId: userId,
-        ingredients: data.ingredients.map((ingredient, index) => ({
+        ingredients: (data.ingredients || ['']).filter(i => i.trim()).map((ingredient, index) => ({
           id: index,
           name: ingredient,
           amount: 1,
           unit: 'unit',
         })),
-        instructions: data.instructions.map((instruction, index) => ({
+        instructions: (data.instructions || ['']).filter(i => i.trim()).map((instruction, index) => ({
           step: index + 1,
           description: instruction,
         })),
         images: [],
         nutrition: null,
         tagIds: [],
+      }
+
+      // Ensure at least one ingredient and instruction for database
+      if (recipeData.ingredients.length === 0) {
+        recipeData.ingredients = [{ id: 0, name: 'To be added', amount: 1, unit: 'unit' }]
+      }
+      if (recipeData.instructions.length === 0) {
+        recipeData.instructions = [{ step: 1, description: 'To be added' }]
       }
 
       // Create recipe in database
@@ -77,7 +88,7 @@ export default async function CreateRecipePage() {
       redirect(`/admin/recipes/${recipe.id}/edit?success=created`)
     } catch (error) {
       console.error('Error creating recipe:', error)
-      throw new Error('Failed to create recipe')
+      throw new Error('Failed to create recipe: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
   }
 
