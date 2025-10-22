@@ -19,17 +19,11 @@ export default function HomePage() {
           </p>
           
           <div className="flex justify-center gap-4 flex-wrap">
-            <a 
-              href="/recipes" 
+            <a
+              href="/recipes"
               className="px-6 py-3 bg-primary-500 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-semibold uppercase tracking-wide transition-all duration-150"
             >
               View Recipes
-            </a>
-            <a 
-              href="/blog" 
-              className="px-6 py-3 bg-white text-black border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-medium uppercase tracking-wide transition-all duration-150"
-            >
-              Read Blog
             </a>
           </div>
           
@@ -45,10 +39,10 @@ export default function HomePage() {
                 GitHub
               </a>
               <a
-                href={`mailto:${SITE_CONFIG.social.email}`}
+                href="mailto:jeg402@gmail.com"
                 className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
               >
-                Email
+                jeg402@gmail.com
               </a>
             </div>
           </div>
