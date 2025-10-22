@@ -22,7 +22,7 @@ export default async function CreateRecipePage() {
   // Handle form submission
   const handleSubmit = async (data: RecipeFormData) => {
     'use server'
-    
+
     try {
       // Get current user
       const { userId } = auth()
@@ -30,31 +30,47 @@ export default async function CreateRecipePage() {
         throw new Error('Authentication required')
       }
 
-      // Validate the recipe data
-      const validatedData = recipeSchema.parse({
-        ...data,
+      // Generate slug from title
+      const slug = data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+
+      // Transform form data to match Prisma schema
+      const recipeData = {
+        title: data.title,
+        slug: slug,
+        description: data.description,
+        prepTime: data.prepTime,
+        cookTime: data.cookTime,
         totalTime: data.prepTime + data.cookTime,
-      })
+        servings: data.servings,
+        difficulty: data.difficulty,
+        category: data.category,
+        cuisine: data.cuisine || '',
+        notes: data.notes || '',
+        source: data.source || '',
+        featured: data.featured || false,
+        published: data.published || false,
+        authorId: userId,
+        ingredients: data.ingredients.map((ingredient, index) => ({
+          id: index,
+          name: ingredient,
+          amount: 1,
+          unit: 'unit',
+        })),
+        instructions: data.instructions.map((instruction, index) => ({
+          step: index + 1,
+          description: instruction,
+        })),
+        images: [],
+        nutrition: null,
+        tagIds: [],
+      }
 
       // Create recipe in database
       const recipe = await prisma.recipe.create({
-        data: {
-          ...validatedData,
-          authorId: userId,
-          slug: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
-          ingredients: data.ingredients.map((ingredient, index) => ({
-            id: index,
-            name: ingredient,
-            amount: 1,
-            unit: 'unit',
-          })),
-          instructions: data.instructions.map((instruction, index) => ({
-            step: index + 1,
-            description: instruction,
-          })),
-          images: [],
-          nutrition: null,
-        },
+        data: recipeData,
       })
 
       // Redirect to recipe edit page
