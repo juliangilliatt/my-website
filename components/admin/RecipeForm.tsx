@@ -138,13 +138,24 @@ export function RecipeForm({
     const draftData = { ...values, published: false }
     try {
       if (onSubmit) {
-        await onSubmit(draftData)
-        setSubmitSuccess(true)
+        const result = await onSubmit(draftData)
 
-        // Redirect after success
-        setTimeout(() => {
-          router.push('/admin/recipes')
-        }, 2000)
+        // Check if the result indicates success
+        if (result && typeof result === 'object' && 'success' in result) {
+          if (result.success && result.recipeId) {
+            // Redirect to edit page
+            router.push(`/admin/recipes/${result.recipeId}/edit?success=created`)
+          } else {
+            // Show error
+            alert('Error saving draft: ' + (result.error || 'Unknown error'))
+          }
+        } else {
+          // Old behavior - show success and redirect to list
+          setSubmitSuccess(true)
+          setTimeout(() => {
+            router.push('/admin/recipes')
+          }, 2000)
+        }
       }
     } catch (error) {
       console.error('Save draft error:', error)
