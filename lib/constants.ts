@@ -158,7 +158,7 @@ export const SIZES = {
 // Site configuration
 export const SITE_CONFIG = {
   name: 'Julian Gilliatt',
-  description: 'Developer, creator, and cooking enthusiast',
+  description: "this site is a WIP - i'm building suspense",
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://juliangilliatt.com',
   author: 'Julian Gilliatt',
   social: {
