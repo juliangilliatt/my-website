@@ -4,7 +4,6 @@ import { AdminBreadcrumb } from '@/components/admin/AdminNav'
 import { RecipeTable } from '@/components/admin/RecipeTable'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { SITE_CONFIG } from '@/lib/constants'
 
 export const metadata: Metadata = {

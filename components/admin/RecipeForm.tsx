@@ -143,18 +143,18 @@ export function RecipeForm({
         // Check if the result indicates success
         if (result && typeof result === 'object' && 'success' in result) {
           if (result.success) {
-            // Show success message and redirect to recipe list
+            // Show success message and redirect to admin dashboard
             alert('Recipe saved successfully!')
-            router.push('/admin/recipes')
+            router.push('/admin')
           } else {
             // Show error
             alert('Error saving draft: ' + (result.error || 'Unknown error'))
           }
         } else {
-          // Old behavior - show success and redirect to list
+          // Old behavior - show success and redirect to admin
           setSubmitSuccess(true)
           setTimeout(() => {
-            router.push('/admin/recipes')
+            router.push('/admin')
           }, 2000)
         }
       }
