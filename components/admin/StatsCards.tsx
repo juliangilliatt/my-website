@@ -37,7 +37,7 @@ export function StatsCards({ className }: StatsCardsProps) {
   }
 
   return (
-    <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6', className)}>
+    <div className={cn('grid grid-cols-1 md:grid-cols-2 gap-6', className)}>
       <StatCard
         title="Total Recipes"
         value={stats.totalRecipes}
@@ -45,29 +45,13 @@ export function StatsCards({ className }: StatsCardsProps) {
         color="bg-blue-100 text-blue-800 border-blue-500"
         trend={{ value: 12, type: 'increase' }}
       />
-      
+
       <StatCard
         title="Blog Posts"
         value={stats.totalBlogPosts}
         icon={<BlogIcon className="w-6 h-6" />}
         color="bg-green-100 text-green-800 border-green-500"
         trend={{ value: 8, type: 'increase' }}
-      />
-      
-      <StatCard
-        title="Total Users"
-        value={stats.totalUsers}
-        icon={<UsersIcon className="w-6 h-6" />}
-        color="bg-purple-100 text-purple-800 border-purple-500"
-        trend={{ value: 24, type: 'increase' }}
-      />
-      
-      <StatCard
-        title="Page Views"
-        value={stats.totalViews}
-        icon={<ViewsIcon className="w-6 h-6" />}
-        color="bg-orange-100 text-orange-800 border-orange-500"
-        trend={{ value: 5, type: 'decrease' }}
       />
     </div>
   )

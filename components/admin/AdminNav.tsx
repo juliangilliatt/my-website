@@ -38,24 +38,6 @@ export function AdminNav({ className }: AdminNavProps) {
       icon: <BlogIcon className="w-5 h-5" />,
       permission: 'blog:read',
     },
-    {
-      name: 'Users',
-      href: '/admin/users',
-      icon: <UsersIcon className="w-5 h-5" />,
-      permission: 'users:read',
-    },
-    {
-      name: 'Analytics',
-      href: '/admin/analytics',
-      icon: <AnalyticsIcon className="w-5 h-5" />,
-      permission: 'analytics:read',
-    },
-    {
-      name: 'Settings',
-      href: '/admin/settings',
-      icon: <SettingsIcon className="w-5 h-5" />,
-      permission: 'settings:update',
-    },
   ]
 
   const visibleItems = navigationItems.filter(item => 
@@ -192,24 +174,6 @@ export function AdminSidebar({ className }: { className?: string }) {
         { name: 'Create Post', href: '/admin/blog/create', permission: 'blog:create' },
         { name: 'Categories', href: '/admin/blog/categories', permission: 'blog:read' },
       ],
-    },
-    {
-      name: 'Users',
-      href: '/admin/users',
-      icon: <UsersIcon className="w-5 h-5" />,
-      permission: 'users:read',
-    },
-    {
-      name: 'Analytics',
-      href: '/admin/analytics',
-      icon: <AnalyticsIcon className="w-5 h-5" />,
-      permission: 'analytics:read',
-    },
-    {
-      name: 'Settings',
-      href: '/admin/settings',
-      icon: <SettingsIcon className="w-5 h-5" />,
-      permission: 'settings:update',
     },
   ]
 
