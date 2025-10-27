@@ -51,7 +51,6 @@ export async function createRecipe(data: RecipeFormData) {
       })),
       images: [],
       nutrition: null,
-      tagIds: [],
     }
 
     // Ensure at least one ingredient and instruction for database
