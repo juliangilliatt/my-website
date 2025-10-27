@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Suspense } from 'react'
 import Link from 'next/link'
 import { AdminBreadcrumb } from '@/components/admin/AdminNav'
 import { RecipeTable } from '@/components/admin/RecipeTable'
@@ -70,13 +69,11 @@ export default async function RecipeManagementPage({ searchParams }: RecipeManag
       </Card>
 
       {/* Recipe Table */}
-      <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-        <RecipeTable
-          searchQuery={searchQuery}
-          categoryFilter={category}
-          statusFilter={status}
-        />
-      </Suspense>
+      <RecipeTable
+        searchQuery={searchQuery}
+        categoryFilter={category}
+        statusFilter={status}
+      />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
