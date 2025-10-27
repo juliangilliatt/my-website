@@ -13,6 +13,18 @@ export async function createRecipe(data: RecipeFormData) {
       throw new Error('Authentication required')
     }
 
+    // Ensure user exists in database (create if not)
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: 'admin@example.com', // Default email
+        name: 'Admin User',
+        role: 'ADMIN',
+      },
+    })
+
     // Generate slug from title (with fallback for drafts)
     const title = data.title || 'Untitled Recipe'
     const slug = title
