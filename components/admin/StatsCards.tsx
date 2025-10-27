@@ -43,7 +43,6 @@ export function StatsCards({ className }: StatsCardsProps) {
         value={stats.totalRecipes}
         icon={<RecipeIcon className="w-6 h-6" />}
         color="bg-blue-100 text-blue-800 border-blue-500"
-        trend={{ value: 12, type: 'increase' }}
       />
 
       <StatCard
@@ -51,7 +50,6 @@ export function StatsCards({ className }: StatsCardsProps) {
         value={stats.totalBlogPosts}
         icon={<BlogIcon className="w-6 h-6" />}
         color="bg-green-100 text-green-800 border-green-500"
-        trend={{ value: 8, type: 'increase' }}
       />
     </div>
   )
@@ -96,36 +94,14 @@ function StatCard({ title, value, icon, color, trend, className }: StatCardProps
         <div className={cn('p-3 rounded-lg border-2 shadow-brutal-sm', color)}>
           {icon}
         </div>
-        {trend && (
-          <Badge variant="outline" className={cn('font-mono text-xs', 
-            trend.type === 'increase' ? 'text-green-600' : 'text-red-600'
-          )}>
-            {trend.type === 'increase' ? '+' : '-'}{trend.value}%
-          </Badge>
-        )}
       </div>
-      
+
       <div className="mb-2">
         <div className="text-2xl font-mono font-bold text-black">
           {displayValue.toLocaleString()}
         </div>
         <div className="text-sm font-mono text-neutral-600">{title}</div>
       </div>
-      
-      {trend && (
-        <div className="flex items-center gap-1">
-          {trend.type === 'increase' ? (
-            <TrendUpIcon className="w-4 h-4 text-green-600" />
-          ) : (
-            <TrendDownIcon className="w-4 h-4 text-red-600" />
-          )}
-          <span className={cn('text-xs font-mono', 
-            trend.type === 'increase' ? 'text-green-600' : 'text-red-600'
-          )}>
-            {trend.value}% from last month
-          </span>
-        </div>
-      )}
     </Card>
   )
 }

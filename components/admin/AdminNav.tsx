@@ -16,7 +16,6 @@ interface AdminNavProps {
 export function AdminNav({ className }: AdminNavProps) {
   const pathname = usePathname()
   const { isAdmin, getRoleDisplayName, getRoleColor, checkPermission } = useAdminAuth()
-  const { unreadCount } = useAdminNotifications()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navigationItems = [
@@ -83,16 +82,6 @@ export function AdminNav({ className }: AdminNavProps) {
 
           {/* Right side items */}
           <div className="flex items-center gap-4">
-            {/* Notifications */}
-            <button className="relative p-2 text-neutral-600 hover:text-black transition-colors duration-150">
-              <BellIcon className="w-5 h-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs font-mono font-bold rounded-full flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
-
             {/* Role badge */}
             <Badge className={cn('font-mono text-xs', getRoleColor())}>
               {getRoleDisplayName()}

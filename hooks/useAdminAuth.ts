@@ -174,37 +174,51 @@ export function usePermissionGuard(permission: Permission) {
 
 // Hook for admin statistics and data
 export function useAdminStats() {
-  const [stats] = useState({
-    totalRecipes: 42,
-    totalBlogPosts: 18,
-    totalUsers: 156,
-    totalViews: 12847,
-    recentActivity: [
-      {
-        id: '1',
-        action: 'Recipe Created',
-        user: 'Admin',
-        timestamp: new Date().toISOString(),
-        resource: 'Chocolate Chip Cookies',
-      },
-      {
-        id: '2',
-        action: 'Blog Post Published',
-        user: 'Admin',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        resource: 'Next.js Best Practices',
-      },
-      {
-        id: '3',
-        action: 'User Registered',
-        user: 'System',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        resource: 'john.doe@example.com',
-      },
-    ],
-    isLoading: false,
-    error: null,
+  const [stats, setStats] = useState({
+    totalRecipes: 0,
+    totalBlogPosts: 0,
+    totalUsers: 0,
+    totalViews: 0,
+    recentActivity: [] as Array<{
+      id: string
+      action: string
+      user: string
+      timestamp: string
+      resource: string
+    }>,
+    isLoading: true,
+    error: null as string | null,
   })
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/admin/stats')
+        if (!response.ok) {
+          throw new Error('Failed to fetch stats')
+        }
+        const data = await response.json()
+        setStats({
+          totalRecipes: data.totalRecipes || 0,
+          totalBlogPosts: data.totalBlogPosts || 0,
+          totalUsers: data.totalUsers || 0,
+          totalViews: data.totalViews || 0,
+          recentActivity: data.recentActivity || [],
+          isLoading: false,
+          error: null,
+        })
+      } catch (error) {
+        console.error('Error fetching admin stats:', error)
+        setStats(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }))
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   return stats
 }
