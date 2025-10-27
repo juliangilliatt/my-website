@@ -3,16 +3,17 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid())
   email     String   @unique
   name      String
   avatar    String?
@@ -39,10 +40,10 @@ model User {
 }
 
 model Recipe {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(cuid())
   title       String
   slug        String   @unique
-  description String
+  description String   @db.Text
   prepTime    Int      // in minutes
   cookTime    Int      // in minutes
   totalTime   Int      // in minutes
@@ -50,7 +51,7 @@ model Recipe {
   difficulty  String   // 'easy', 'medium', 'hard'
   category    String
   cuisine     String
-  notes       String?
+  notes       String?  @db.Text
   source      String?
   rating      Float?
   ratingCount Int?     @default(0)
@@ -59,18 +60,17 @@ model Recipe {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // JSON fields for complex data
-  ingredients  Json[] // Array of ingredient objects
-  instructions Json[] // Array of instruction objects
-  images       Json[] // Array of image objects
-  nutrition    Json?  // Nutrition information object
+  // JSONB fields for complex data (more efficient than JSON)
+  ingredients  Json     // Array of ingredient objects
+  instructions Json     // Array of instruction objects
+  images       Json     // Array of image objects
+  nutrition    Json?    // Nutrition information object
 
   // Relations
-  authorId String @db.ObjectId
+  authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  tagIds String[] @db.ObjectId
-  tags   Tag[]    @relation(fields: [tagIds], references: [id])
+  tags Tag[]
 
   @@map("recipes")
   @@index([category])
@@ -80,11 +80,11 @@ model Recipe {
   @@index([published])
   @@index([createdAt])
   @@index([rating])
-  @@fulltext([title, description])
+  @@index([authorId])
 }
 
 model Tag {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(cuid())
   name  String @unique
   slug  String @unique
   color String @default("#000000")
@@ -94,21 +94,18 @@ model Tag {
   updatedAt DateTime @updatedAt
 
   // Relations
-  recipeIds String[] @db.ObjectId
-  recipes   Recipe[] @relation(fields: [recipeIds], references: [id])
-
-  blogPostIds String[]   @db.ObjectId
-  blogPosts   BlogPost[] @relation(fields: [blogPostIds], references: [id])
+  recipes   Recipe[]
+  blogPosts BlogPost[]
 
   @@map("tags")
 }
 
 model BlogPost {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  id          String      @id @default(cuid())
   title       String
   slug        String      @unique
-  excerpt     String
-  content     String
+  excerpt     String      @db.Text
+  content     String      @db.Text
   coverImage  String?
   category    String
   status      PostStatus  @default(DRAFT)
@@ -121,11 +118,10 @@ model BlogPost {
   updatedAt   DateTime    @updatedAt
 
   // Relations
-  authorId String @db.ObjectId
+  authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  tagIds String[] @db.ObjectId
-  tags   Tag[]    @relation(fields: [tagIds], references: [id])
+  tags Tag[]
 
   @@map("blog_posts")
   @@index([category])
@@ -135,11 +131,11 @@ model BlogPost {
   @@index([createdAt])
   @@index([views])
   @@index([likes])
-  @@fulltext([title, excerpt, content])
+  @@index([authorId])
 }
 
 model Image {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(cuid())
   url         String
   filename    String
   originalName String
@@ -153,17 +149,18 @@ model Image {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  uploadedById String @db.ObjectId
+  uploadedById String
   uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
 
   @@map("images")
   @@index([filename])
   @@index([type])
   @@index([createdAt])
+  @@index([uploadedById])
 }
 
 model Analytics {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid())
   event     String
   path      String
   userAgent String?
@@ -187,9 +184,9 @@ model Analytics {
 }
 
 model Session {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String?  @db.ObjectId
+  userId       String?
   expires      DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -203,17 +200,17 @@ model Session {
 }
 
 model Account {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String  @db.ObjectId
+  id                String   @id @default(cuid())
+  userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String?  @db.Text
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -227,7 +224,7 @@ model Account {
 }
 
 model VerificationToken {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String   @id @default(cuid())
   identifier String
   token      String   @unique
   expires    DateTime
@@ -239,7 +236,7 @@ model VerificationToken {
 }
 
 model Newsletter {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(cuid())
   email       String   @unique
   name        String?
   subscribed  Boolean  @default(true)
@@ -257,15 +254,15 @@ model Newsletter {
 }
 
 model Contact {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  id        String        @id @default(cuid())
   name      String
   email     String
   subject   String
-  message   String
+  message   String        @db.Text
   status    ContactStatus @default(UNREAD)
-  replied   Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  replied   Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@map("contacts")
   @@index([email])
