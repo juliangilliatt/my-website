@@ -47,54 +47,6 @@ export function QuickActions({ className }: QuickActionsProps) {
       href: '/admin/blog/create',
       permission: 'blog:create',
     },
-    {
-      id: 'manage-users',
-      name: 'Manage Users',
-      description: 'View and manage user accounts',
-      icon: <UsersIcon className="w-5 h-5" />,
-      color: 'bg-purple-500 text-white',
-      href: '/admin/users',
-      permission: 'users:read',
-    },
-    {
-      id: 'view-analytics',
-      name: 'View Analytics',
-      description: 'Check site performance metrics',
-      icon: <AnalyticsIcon className="w-5 h-5" />,
-      color: 'bg-orange-500 text-white',
-      href: '/admin/analytics',
-      permission: 'analytics:read',
-    },
-    {
-      id: 'backup-data',
-      name: 'Backup Data',
-      description: 'Create a backup of all data',
-      icon: <BackupIcon className="w-5 h-5" />,
-      color: 'bg-gray-500 text-white',
-      permission: 'admin:manage',
-      action: async () => {
-        await executeAction('backup', 'database', async () => {
-          // Simulate backup process
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          alert('Backup completed successfully!')
-        })
-      },
-    },
-    {
-      id: 'clear-cache',
-      name: 'Clear Cache',
-      description: 'Clear application cache',
-      icon: <RefreshIcon className="w-5 h-5" />,
-      color: 'bg-red-500 text-white',
-      permission: 'admin:manage',
-      action: async () => {
-        await executeAction('clear_cache', 'system', async () => {
-          // Simulate cache clearing
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          alert('Cache cleared successfully!')
-        })
-      },
-    },
   ]
 
   const visibleActions = actions.filter(action => 

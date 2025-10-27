@@ -1,10 +1,8 @@
 import { Metadata } from 'next'
-import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
 import { AdminBreadcrumb } from '@/components/admin/AdminNav'
-import { StatsCards, DetailedStatsCards, RecentActivityStats } from '@/components/admin/StatsCards'
-import { QuickActions, RecentTasks, SystemActions } from '@/components/admin/QuickActions'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { StatsCards } from '@/components/admin/StatsCards'
+import { QuickActions } from '@/components/admin/QuickActions'
 import { SITE_CONFIG } from '@/lib/constants'
 
 export const metadata: Metadata = {
@@ -32,42 +30,12 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Main Stats Cards */}
-      <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-        <StatsCards />
-      </Suspense>
+      <StatsCards />
 
       {/* Quick Actions */}
       <div>
         <h2 className="text-xl font-mono font-bold text-black mb-4">Quick Actions</h2>
-        <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-          <QuickActions />
-        </Suspense>
-      </div>
-
-      {/* Detailed Stats */}
-      <div>
-        <h2 className="text-xl font-mono font-bold text-black mb-4">Detailed Overview</h2>
-        <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-          <DetailedStatsCards />
-        </Suspense>
-      </div>
-
-      {/* Recent Activity and Tasks */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-          <RecentActivityStats />
-        </Suspense>
-        <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-          <RecentTasks />
-        </Suspense>
-      </div>
-
-      {/* System Actions */}
-      <div>
-        <h2 className="text-xl font-mono font-bold text-black mb-4">System Management</h2>
-        <Suspense fallback={<LoadingSpinner className="w-8 h-8 mx-auto" />}>
-          <SystemActions />
-        </Suspense>
+        <QuickActions />
       </div>
     </div>
   )
