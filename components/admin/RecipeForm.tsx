@@ -142,9 +142,10 @@ export function RecipeForm({
 
         // Check if the result indicates success
         if (result && typeof result === 'object' && 'success' in result) {
-          if (result.success && result.recipeId) {
-            // Redirect to edit page
-            router.push(`/admin/recipes/${result.recipeId}/edit?success=created`)
+          if (result.success) {
+            // Show success message and redirect to recipe list
+            alert('Recipe saved successfully!')
+            router.push('/admin/recipes')
           } else {
             // Show error
             alert('Error saving draft: ' + (result.error || 'Unknown error'))
