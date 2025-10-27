@@ -9,49 +9,69 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      <main className="max-w-6xl mx-auto px-4 py-16">
-        <div className="text-center space-y-8">
-          <h1 className="text-4xl font-mono font-bold text-black uppercase tracking-wide">
-            {SITE_CONFIG.name}
-          </h1>
-          <p className="text-lg font-mono text-neutral-600">
-            {SITE_CONFIG.description}
-          </p>
-          
-          <div className="flex justify-center gap-4 flex-wrap">
+      {/* Top Navigation */}
+      <nav className="border-b-2 border-black">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <a
+              href="/"
+              className="px-4 py-2 bg-black text-white border-2 border-black font-mono font-medium hover:bg-neutral-800 transition-colors"
+            >
+              Home
+            </a>
             <a
               href="/recipes"
-              className="px-6 py-3 bg-primary-500 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-semibold uppercase tracking-wide transition-all duration-150"
+              className="px-4 py-2 bg-white text-black border-2 border-black shadow-brutal hover:shadow-brutal-sm font-mono font-medium transition-all"
             >
-              View Recipes
+              Recipes
+            </a>
+          </div>
+          <a
+            href="/admin"
+            className="font-mono text-sm text-neutral-600 hover:text-black underline transition-colors"
+          >
+            Admin
+          </a>
+        </div>
+      </nav>
+
+      <main className="max-w-6xl mx-auto px-4 py-16">
+        <div className="space-y-8">
+          {/* Name */}
+          <h1 className="text-4xl font-mono font-bold text-black">
+            {SITE_CONFIG.name}
+          </h1>
+
+          {/* Links Row */}
+          <div className="flex items-center gap-6 flex-wrap">
+            <a
+              href="mailto:jeg402@gmail.com"
+              className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
+            >
+              jeg402@gmail.com
             </a>
             <a
-              href="/admin"
-              className="px-6 py-3 bg-white text-black border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 font-mono font-medium uppercase tracking-wide transition-all duration-150"
+              href="https://www.linkedin.com/in/julian-gilliatt/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
             >
-              Admin
+              LinkedIn
+            </a>
+            <a
+              href={`https://github.com/${SITE_CONFIG.social.github}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
+            >
+              GitHub
             </a>
           </div>
-          
-          <div className="space-y-4">
-            <p className="font-mono text-sm text-neutral-500">Connect with me:</p>
-            <div className="flex justify-center gap-4">
-              <a
-                href={`https://github.com/${SITE_CONFIG.social.github}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
-              >
-                GitHub
-              </a>
-              <a
-                href="mailto:jeg402@gmail.com"
-                className="font-mono text-sm text-neutral-600 hover:text-black transition-colors"
-              >
-                jeg402@gmail.com
-              </a>
-            </div>
-          </div>
+
+          {/* About Me */}
+          <p className="text-lg font-mono text-neutral-600 max-w-2xl">
+            {SITE_CONFIG.description}
+          </p>
         </div>
       </main>
     </div>
